@@ -1,5 +1,6 @@
 package edu.mayo.informatics.indexer.entity.dao;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -14,6 +15,7 @@ import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
+import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.store.Directory;
@@ -98,12 +100,21 @@ public static String createCodingSchemeUriVersionKey(String uri, String version)
 	return uri + "-" + version;
 }
 
-public void startNewDocument(String documentIdentifier, Document document) throws InvalidValueException {
+public Document startNewDocument(String documentIdentifier, Document document) throws InvalidValueException {
     if (documentIdentifier == null || documentIdentifier.length() < 1) {
         throw new InvalidValueException("Document Identifier.is required");
     }
     document.add(new StringField(edu.mayo.informatics.indexer.lucene.Index.UNIQUE_DOCUMENT_IDENTIFIER_FIELD,
             documentIdentifier, Store.YES));
+    return document;
+}
+
+public void indexBlockDocs(IndexWriter writer, List<Document> docs) throws IOException{ 
+	
+	writer.addDocuments(docs);
+	writer.commit();
+	writer.close();
+	
 }
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
