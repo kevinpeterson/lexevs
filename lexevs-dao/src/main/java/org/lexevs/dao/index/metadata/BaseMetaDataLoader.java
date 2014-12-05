@@ -18,23 +18,16 @@
  */
 package org.lexevs.dao.index.metadata;
 
-import java.util.List;
-import java.util.UUID;
-
 import org.LexGrid.LexBIG.Utility.logging.LgLoggerIF;
-import org.apache.commons.codec.language.DoubleMetaphone;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
+import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
+import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
 import org.apache.lucene.document.Document;
-import org.lexevs.dao.index.indexer.LuceneLoaderCode;
+import org.lexevs.dao.index.indexer.DocumentFromStringsGenerator;
 import org.lexevs.logging.LoggerFactory;
 
-import edu.mayo.informatics.indexer.api.generators.DocumentFromStringsGenerator;
-import edu.mayo.informatics.indexer.lucene.analyzers.EncoderAnalyzer;
-import edu.mayo.informatics.indexer.lucene.analyzers.NormAnalyzer;
-import edu.mayo.informatics.indexer.lucene.analyzers.SnowballAnalyzer;
-import edu.mayo.informatics.indexer.lucene.analyzers.StringAnalyzer;
-import edu.mayo.informatics.indexer.lucene.analyzers.WhiteSpaceLowerCaseAnalyzer;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Base class for building a metadata index for LexFoo metadata.
@@ -129,9 +122,9 @@ public class BaseMetaDataLoader {
 
     public static Analyzer getMetadataAnalyzer() {
         // no stop words, default character removal set.
-        PerFieldAnalyzerWrapper analyzer = new PerFieldAnalyzerWrapper(new WhiteSpaceLowerCaseAnalyzer(new String[] {},
-                WhiteSpaceLowerCaseAnalyzer.getDefaultCharRemovalSet(), LuceneLoaderCode.lexGridWhiteSpaceIndexSet));
+        PerFieldAnalyzerWrapper analyzer = new PerFieldAnalyzerWrapper(new WhitespaceAnalyzer());
 
+        /*
         if (doubleMetaphoneEnabled_) {
             EncoderAnalyzer temp = new EncoderAnalyzer(new DoubleMetaphone(), new String[] {},
                     WhiteSpaceLowerCaseAnalyzer.getDefaultCharRemovalSet(), LuceneLoaderCode.lexGridWhiteSpaceIndexSet);
@@ -158,6 +151,7 @@ public class BaseMetaDataLoader {
         // these fields just get simple analyzing.
         StringAnalyzer sa = new StringAnalyzer(STRING_TOKEINZER_TOKEN);
         analyzer.addAnalyzer("parentContainers", sa);
+        */
 
         return analyzer;
     }

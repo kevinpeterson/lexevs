@@ -18,8 +18,6 @@
  */
 package org.LexGrid.LexBIG.Impl.Extensions.Search;
 
-import java.util.Set;
-
 import org.LexGrid.LexBIG.DataModel.InterfaceElements.ExtensionDescription;
 import org.LexGrid.LexBIG.Exceptions.LBParameterException;
 import org.LexGrid.LexBIG.Extensions.ExtensionRegistry;
@@ -29,7 +27,7 @@ import org.LexGrid.LexBIG.Impl.dataAccess.IndexQueryParserFactory;
 import org.apache.lucene.queryParser.QueryParser;
 import org.springframework.util.StringUtils;
 
-import edu.mayo.informatics.indexer.api.generators.QueryGenerator;
+import java.util.Set;
 
 /**
  * The Class AbstractSearch.
@@ -88,7 +86,8 @@ public abstract class AbstractSearch extends AbstractExtendable implements Searc
             }
             query = temp.toString();
         }
-        return QueryGenerator.removeExtraWhiteSpaceCharacters(query, extraWhitespaceCharaters);
+
+        return query;
     }
     
     /**

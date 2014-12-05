@@ -20,10 +20,12 @@ package org.LexGrid.LexBIG.Impl.helpers.lazyloading;
 
 import org.LexGrid.util.sql.lgTables.SQLTableConstants;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.FieldSelector;
-import org.apache.lucene.document.MapFieldSelector;
 import org.apache.lucene.search.ScoreDoc;
 import org.lexevs.dao.index.indexer.LuceneLoaderCode;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * The Class NonProxyLazyCodeToReturn.
@@ -72,15 +74,15 @@ public class NonProxyLazyCodeToReturn extends AbstractNonProxyLazyCodeToReturn {
             this.getEntityIndexService().getDocumentById(uri, internalVersionString, this.getDocumentId(), this.doGetFieldSelector());
     }
     
-    protected FieldSelector doGetFieldSelector() {
-        return new MapFieldSelector(
-                new String[] {
+    protected Set<String> doGetFieldSelector() {
+        return new HashSet<String>(
+                Arrays.asList(
                         SQLTableConstants.TBLCOL_ENTITYCODE,
                         LuceneLoaderCode.ENTITY_UID_FIELD,
                         SQLTableConstants.TBLCOL_ENTITYDESCRIPTION,
                         LuceneLoaderCode.CODING_SCHEME_ID_FIELD,
                         LuceneLoaderCode.CODING_SCHEME_VERSION_FIELD,
                         SQLTableConstants.TBLCOL_ENTITYCODENAMESPACE,
-                        "entityType"});
+                        "entityType"));
     }
 }

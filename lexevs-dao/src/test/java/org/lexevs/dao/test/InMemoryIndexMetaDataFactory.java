@@ -18,11 +18,8 @@
  */
 package org.lexevs.dao.test;
 
+import org.lexevs.dao.index.indexer.MetaData;
 import org.springframework.beans.factory.FactoryBean;
-
-import edu.mayo.informatics.indexer.api.exceptions.InternalErrorException;
-import edu.mayo.informatics.indexer.utility.MetaData;
-
 
 /**
  * A factory for creating InMemoryIndexMetaData objects.
@@ -65,7 +62,7 @@ public class InMemoryIndexMetaDataFactory implements FactoryBean {
 		 */
 		@Override
 		public void rereadFile(boolean releaseLockWhenDone)
-				throws InternalErrorException {
+				throws Exception {
 			//no-op - in memory
 		}
 
@@ -74,7 +71,7 @@ public class InMemoryIndexMetaDataFactory implements FactoryBean {
 		 */
 		@Override
 		protected synchronized void writeFile(boolean unlockWhenDone)
-				throws InternalErrorException {
+				throws Exception {
 			//no-op - in memory
 		}	
 	}

@@ -19,16 +19,13 @@
 package org.lexevs.dao.index.lucenesupport;
 
 import java.util.List;
+import java.util.Set;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.FieldSelector;
+import org.apache.lucene.index.StoredFieldVisitor;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.DocIdSet;
-import org.apache.lucene.search.Filter;
-import org.apache.lucene.search.HitCollector;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.*;
 import org.lexevs.dao.index.lucenesupport.BaseLuceneIndexTemplate.IndexReaderCallback;
 import org.lexevs.dao.index.lucenesupport.BaseLuceneIndexTemplate.IndexSearcherCallback;
 import org.lexevs.dao.index.lucenesupport.BaseLuceneIndexTemplate.IndexWriterCallback;
@@ -43,17 +40,15 @@ public interface LuceneIndexTemplate {
 	public void removeDocuments(Query query);
 
 	public void search(Query query, Filter filter,
-			HitCollector hitCollector);
+			Collector hitCollector);
 	
 	public void optimize();
 	
 	public int getMaxDoc();
 	
-	public Document getDocumentById(int id, FieldSelector fieldSelector);
+	public Document getDocumentById(int id, Set<String> fieldsToAdd);
 	
 	public Document getDocumentById(int id);
-	
-	public DocIdSet getDocIdSet(Filter filter);
 
 	public String getIndexName();
 	

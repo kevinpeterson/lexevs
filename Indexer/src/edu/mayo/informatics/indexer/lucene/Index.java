@@ -37,7 +37,6 @@ import edu.mayo.informatics.indexer.api.exceptions.OperatorErrorException;
  */
 public class Index {
     private final Logger logger = Logger.getLogger("Indexer.Index");
-    public final static String UNIQUE_DOCUMENT_IDENTIFIER_FIELD = "UNIQUE_DOCUMENT_IDENTIFIER_FIELD";
 
     private final File location_;
     private LuceneIndexWriterInterface indexWriter_ = null;

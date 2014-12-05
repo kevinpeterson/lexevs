@@ -18,12 +18,11 @@
  */
 package org.lexevs.dao.index.lucenesupport;
 
-import java.io.File;
-
+import org.lexevs.dao.index.indexer.MetaData;
 import org.lexevs.system.constants.SystemVariables;
 import org.springframework.beans.factory.FactoryBean;
 
-import edu.mayo.informatics.indexer.utility.MetaData;
+import java.io.File;
 
 public class LuceneIndexMetadataFactory implements FactoryBean {
 	

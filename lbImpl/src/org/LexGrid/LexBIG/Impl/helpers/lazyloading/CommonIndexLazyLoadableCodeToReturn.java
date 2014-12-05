@@ -66,6 +66,6 @@ public class CommonIndexLazyLoadableCodeToReturn extends AbstractNonProxyLazyCod
     }
     
     protected Document buildDocument() throws Exception {
-        return getEntityIndexService().getDocumentFromCommonIndexById(this.references, this.getDocumentId());
+        return null;// TOOD: getEntityIndexService().getDocumentById(this.references, this.getDocumentId());
     }
 }

@@ -22,9 +22,8 @@ import org.LexGrid.LexBIG.DataModel.InterfaceElements.ExtensionDescription;
 import org.LexGrid.LexBIG.Extensions.Query.Search;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.regex.RegexQuery;
 import org.lexevs.dao.index.indexer.LuceneLoaderCode;
-
-import edu.mayo.informatics.indexer.lucene.query.SerializableRegexQuery;
 
 /**
  * The Class RegExpSearch.
@@ -57,7 +56,7 @@ public class RegExpSearch extends AbstractSearch {
      * @see org.LexGrid.LexBIG.Extensions.Query.Search#buildQuery(java.lang.String)
      */
     public Query buildQuery(String searchText) {
-            return new SerializableRegexQuery(new Term(LuceneLoaderCode.UNTOKENIZED_LOWERCASE_PROPERTY_VALUE_FIELD, 
+            return new RegexQuery(new Term(LuceneLoaderCode.UNTOKENIZED_LOWERCASE_PROPERTY_VALUE_FIELD,
                     searchText));    
     } 
 }

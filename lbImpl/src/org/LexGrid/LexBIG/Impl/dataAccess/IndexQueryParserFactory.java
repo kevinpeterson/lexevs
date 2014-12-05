@@ -18,28 +18,16 @@
  */
 package org.LexGrid.LexBIG.Impl.dataAccess;
 
-import java.util.Set;
-
 import org.LexGrid.LexBIG.Exceptions.LBParameterException;
 import org.LexGrid.LexBIG.Utility.logging.LgLoggerIF;
 import org.LexGrid.util.sql.lgTables.SQLTableConstants;
-import org.apache.commons.codec.language.DoubleMetaphone;
-import org.apache.lucene.analysis.KeywordAnalyzer;
-import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Query;
-import org.lexevs.dao.index.indexer.LuceneLoaderCode;
 import org.lexevs.logging.LoggerFactory;
-import org.lexevs.system.ResourceManager;
 
-import edu.mayo.informatics.indexer.api.generators.QueryGenerator;
-import edu.mayo.informatics.indexer.lucene.analyzers.EncoderAnalyzer;
-import edu.mayo.informatics.indexer.lucene.analyzers.FieldSkippingAnalyzer;
-import edu.mayo.informatics.indexer.lucene.analyzers.NormAnalyzer;
-import edu.mayo.informatics.indexer.lucene.analyzers.SnowballAnalyzer;
-import edu.mayo.informatics.indexer.lucene.analyzers.WhiteSpaceLowerCaseAnalyzer;
-import edu.mayo.informatics.lexgrid.convert.utility.Constants;
+import java.util.Set;
 
 /**
  * Build the query parser to use for parsing the text portion of a user query.
@@ -69,56 +57,7 @@ public class IndexQueryParserFactory {
     }
 
     protected IndexQueryParserFactory() {
-        WhiteSpaceLowerCaseAnalyzer wslca = new WhiteSpaceLowerCaseAnalyzer(new String[] {},
-                WhiteSpaceLowerCaseAnalyzer.getDefaultCharRemovalSet(), Constants.lexGridWhiteSpaceIndexSet);
-
-        extraWhiteSpaceChars_ = wslca.getCurrentCharRemovalTable();
-
-        // The PerFieldAnalyzerWrapper allows me to use the proper analyzer per
-        // field - if you are
-        // doing a norm search, you need to analyze with a norm analyzer etc.
-
-        // I also have a FieldSkippingAnalyzer wrapping the default
-        // (WhiteSpaceLowerCaseAnalyzer) - so
-        // that it doesn't tokenize on untokenized fields. But this isn't
-        // necessary anymore, since
-        // I'm building these parts of the query manually. But it doesn't hurt,
-        // so i will leave it in.
-        PerFieldAnalyzerWrapper analyzer = new PerFieldAnalyzerWrapper(new FieldSkippingAnalyzer(
-                new String[] { SQLTableConstants.TBLCOL_CODINGSCHEMENAME, SQLTableConstants.TBLCOL_ENTITYCODE,
-                        SQLTableConstants.TBLCOL_ID, SQLTableConstants.TBLCOL_ENTITYTYPE, "codeBoundry",
-                        SQLTableConstants.TBLCOL_ISACTIVE, SQLTableConstants.TBLCOL_ISPREFERRED,
-                        SQLTableConstants.TBLCOL_PRESENTATIONFORMAT, SQLTableConstants.TBLCOL_FORMAT,
-                        SQLTableConstants.TBLCOL_LANGUAGE, SQLTableConstants.TBLCOL_CONCEPTSTATUS,
-                        SQLTableConstants.TBLCOL_PROPERTYID, "dataType", SQLTableConstants.TBLCOL_DEGREEOFFIDELITY,
-                        SQLTableConstants.TBLCOL_REPRESENTATIONALFORM, SQLTableConstants.TBLCOL_MATCHIFNOCONTEXT,
-                        SQLTableConstants.TBLCOL_PROPERTY, SQLTableConstants.TBLCOL_PROPERTYNAME }, wslca));
-
-        EncoderAnalyzer ea = new EncoderAnalyzer(new DoubleMetaphone(), new String[] {}, WhiteSpaceLowerCaseAnalyzer
-                .getDefaultCharRemovalSet(), Constants.lexGridWhiteSpaceIndexSet);
-        analyzer.addAnalyzer("dm_propertyValue", ea);
-
-        if (ResourceManager.instance().getSystemVariables().isNormEnabled()) {
-            try {
-                NormAnalyzer temp = new NormAnalyzer(ResourceManager.instance().getSystemVariables()
-                        .getNormConfigFile(), false, new String[] {}, WhiteSpaceLowerCaseAnalyzer
-                        .getDefaultCharRemovalSet(), Constants.lexGridWhiteSpaceIndexSet);
-                analyzer.addAnalyzer("norm_propertyValue", temp);
-            } catch (NoClassDefFoundError e) {
-                getLogger().error("Error initializing Normalized Searcher", e);
-            }
-        }
-        
-        analyzer.addAnalyzer("literal_propertyValue", LuceneLoaderCode.literalAnalyzer);
-        
-        analyzer.addAnalyzer(LuceneLoaderCode.UNTOKENIZED_LOWERCASE_PROPERTY_VALUE_FIELD, 
-                new KeywordAnalyzer());
-
-        SnowballAnalyzer sa = new SnowballAnalyzer(false, "English", new String[] {}, WhiteSpaceLowerCaseAnalyzer
-                .getDefaultCharRemovalSet(), Constants.lexGridWhiteSpaceIndexSet);
-        analyzer.addAnalyzer("stem_propertyValue", sa);
-
-        parser_ = new QueryParser(SQLTableConstants.TBLCOL_PROPERTYVALUE, analyzer);
+        parser_ = new QueryParser(SQLTableConstants.TBLCOL_PROPERTYVALUE, new StandardAnalyzer());
         
         //Allow leading wildcards for searches.
         parser_.setAllowLeadingWildcard(true);
@@ -149,7 +88,7 @@ public class IndexQueryParserFactory {
             }
             query = temp.toString();
         }
-        return QueryGenerator.removeExtraWhiteSpaceCharacters(query, extraWhiteSpaceChars_);
+        return query;
     }
 
     /*

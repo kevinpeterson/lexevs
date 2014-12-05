@@ -18,15 +18,11 @@
  */
 package org.lexevs.dao.index.service.entity;
 
-import java.util.List;
-
 import org.LexGrid.LexBIG.DataModel.Core.AbsoluteCodingSchemeVersionReference;
 import org.LexGrid.LexBIG.Exceptions.LBParameterException;
 import org.LexGrid.concepts.Entity;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.FieldSelector;
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
@@ -34,19 +30,16 @@ import org.apache.lucene.search.ScoreDoc;
 import org.lexevs.dao.index.access.IndexDaoManager;
 import org.lexevs.dao.index.indexer.EntityIndexer;
 import org.lexevs.dao.index.indexer.IndexCreator;
-import org.lexevs.dao.index.indexer.LuceneLoaderCode;
 import org.lexevs.dao.index.indexer.IndexCreator.EntityIndexerProgressCallback;
+import org.lexevs.dao.index.indexer.LuceneLoaderCode;
+import org.lexevs.dao.index.indexer.MetaData;
 import org.lexevs.dao.index.indexregistry.IndexRegistry;
-import org.lexevs.dao.index.lucenesupport.BaseLuceneIndexTemplate.IndexReaderCallback;
-import org.lexevs.logging.LoggerFactory;
-import org.lexevs.registry.model.RegistryEntry;
 import org.lexevs.registry.service.Registry;
-import org.lexevs.registry.service.Registry.ResourceType;
 import org.lexevs.system.model.LocalCodingScheme;
 import org.lexevs.system.service.SystemResourceService;
 
-import edu.mayo.informatics.indexer.api.exceptions.InternalErrorException;
-import edu.mayo.informatics.indexer.utility.MetaData;
+import java.util.List;
+import java.util.Set;
 
 /**
  * The Class LuceneEntityIndexService.
@@ -81,6 +74,7 @@ public class LuceneEntityIndexService implements EntityIndexService {
 
 	@Override
 	public void optimizeAll() {
+        /*
 		for(RegistryEntry entry :
 			registry.getAllRegistryEntriesOfType(ResourceType.CODING_SCHEME)){
 			try {
@@ -103,10 +97,12 @@ public class LuceneEntityIndexService implements EntityIndexService {
 		if(!isCommonIndexOptimized) {
 			indexRegistry.getCommonLuceneIndexTemplate().optimize();
 		}
+		*/
 	}
 	
 	@Override
 	public void optimizeIndex(final String codingSchemeUri, final String codingSchemeVersion) {
+        /*
 		boolean isOptimized = indexRegistry.getLuceneIndexTemplate(codingSchemeUri, codingSchemeVersion).executeInIndexReader(new IndexReaderCallback<Boolean>() {
 
 			@Override
@@ -123,6 +119,7 @@ public class LuceneEntityIndexService implements EntityIndexService {
 			LoggerFactory.getLogger().info("Optimizing: " + codingSchemeUri + " Version: " + codingSchemeVersion + ".");
 			indexDaoManager.getEntityDao(codingSchemeUri, codingSchemeVersion).optimizeIndex(codingSchemeUri, codingSchemeVersion);
 		}
+		*/
 	}
 	
 	@Override
@@ -135,18 +132,13 @@ public class LuceneEntityIndexService implements EntityIndexService {
 	@Override
 	public Document getDocumentById(
 			String codingSchemeUri,
-			String codingSchemeVersion, int id, FieldSelector fieldSelector) {
+			String codingSchemeVersion, int id, Set<String> fields) {
 		return indexDaoManager.getEntityDao(codingSchemeUri, codingSchemeVersion).
 			getDocumentById(
 					codingSchemeUri,
 					codingSchemeVersion, 
-					id, 
-					fieldSelector);
-	}
-
-	@Override
-	public Document getDocumentFromCommonIndexById(List<AbsoluteCodingSchemeVersionReference> references, int id) {
-		return indexDaoManager.getCommonEntityDao(references).getDocumentById(id);
+					id,
+                    fields);
 	}
 
 	/* (non-Javadoc)
@@ -218,17 +210,18 @@ public class LuceneEntityIndexService implements EntityIndexService {
 	 * @see org.lexevs.dao.index.service.entity.EntityIndexService#query(org.LexGrid.LexBIG.DataModel.Core.AbsoluteCodingSchemeVersionReference, java.util.List, java.util.List)
 	 */
 	public List<ScoreDoc> query(
-			String codingSchemeUri,
-			String codingSchemeVersion, 
-			List<? extends Query> combinedQueries, List<? extends Query> individualQueries){
-		return indexDaoManager.getEntityDao(codingSchemeUri, codingSchemeVersion).
-			query(codingSchemeUri, codingSchemeVersion, combinedQueries, individualQueries);
+            Set<AbsoluteCodingSchemeVersionReference> codingSchemes,
+            List<? extends Query> combinedQueries, List<? extends Query> individualQueries){
+        return null; //TODO:
+		//return indexDaoManager.getEntityDao(codingSchemeUri, codingSchemeVersion).
+		//	query(codingSchemeUri, codingSchemeVersion, combinedQueries, individualQueries);
 	}
 	
 	@Override
-	public List<ScoreDoc> query(String codingSchemeUri, String version, Query query){
-		return indexDaoManager.getEntityDao(codingSchemeUri, version).
-			query(codingSchemeUri, version, query);
+	public List<ScoreDoc> query(Set<AbsoluteCodingSchemeVersionReference> codingSchemes, Query query){
+		return null; //TODO:
+		//return indexDaoManager.getEntityDao(codingSchemeUri, version).
+		//	query(codingSchemeUri, version, query);
 	}
 
 	@Override
@@ -243,11 +236,6 @@ public class LuceneEntityIndexService implements EntityIndexService {
 	@Override
 	public Filter getCodingSchemeFilter(String uri, String version) {
 		return indexDaoManager.getEntityDao(uri, version).getCodingSchemeFilter(uri, version);
-	}
-
-	@Override
-	public List<ScoreDoc> queryCommonIndex(List<AbsoluteCodingSchemeVersionReference> codingSchemes, Query query) {
-		return indexDaoManager.getCommonEntityDao(codingSchemes).query(query);
 	}
 
 	/**
@@ -277,7 +265,7 @@ public class LuceneEntityIndexService implements EntityIndexService {
 	
 		try {
 			metaData.removeIndexMetaDataValue(this.getCodingSchemeKey(reference));
-		} catch (InternalErrorException e) {
+		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -309,7 +297,7 @@ public class LuceneEntityIndexService implements EntityIndexService {
 		String key = this.getCodingSchemeKey(reference);
 		try {
 			return StringUtils.isNotBlank(metaData.getIndexMetaDataValue(key));
-		} catch (InternalErrorException e) {
+		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}

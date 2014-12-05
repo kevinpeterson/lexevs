@@ -18,25 +18,6 @@
  */
 package org.lexevs.system;
 
-import java.io.File;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.Map.Entry;
-
-import javax.sql.DataSource;
-
 import org.LexGrid.LexBIG.DataModel.Core.AbsoluteCodingSchemeVersionReference;
 import org.LexGrid.LexBIG.DataModel.Core.types.CodingSchemeVersionStatus;
 import org.LexGrid.LexBIG.Exceptions.LBInvocationException;
@@ -53,13 +34,11 @@ import org.lexevs.dao.database.connection.SQLConnectionInfo;
 import org.lexevs.dao.database.connection.SQLHistoryInterface;
 import org.lexevs.dao.database.connection.SQLInterface;
 import org.lexevs.dao.database.type.DatabaseType;
-import org.lexevs.dao.index.connection.IndexInterface;
 import org.lexevs.exceptions.MissingResourceException;
-import org.lexevs.exceptions.UnexpectedInternalError;
 import org.lexevs.locator.LexEvsServiceLocator;
 import org.lexevs.registry.WriteLockManager;
-import org.lexevs.registry.service.XmlRegistry;
 import org.lexevs.registry.service.Registry.KnownTags;
+import org.lexevs.registry.service.XmlRegistry;
 import org.lexevs.registry.service.XmlRegistry.DBEntry;
 import org.lexevs.registry.service.XmlRegistry.HistoryEntry;
 import org.lexevs.system.constants.SystemVariables;
@@ -67,6 +46,13 @@ import org.lexevs.system.event.SystemEventListener;
 import org.lexevs.system.model.LocalCodingScheme;
 import org.lexevs.system.service.SystemResourceService;
 import org.lexevs.system.utility.MyClassLoader;
+
+import javax.sql.DataSource;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * This class keeps track of all of the SQL servers and index locations
@@ -121,17 +107,6 @@ public class ResourceManager implements SystemResourceService {
     // this maps serverId's to the SQLInterface object that acceesses them.
     /** The sql server interfaces_. */
     private Hashtable<String, SQLInterface> sqlServerInterfaces_;
-
-    // This maps low level jdbc connection information to the connection pool
-    // that accesses
-    // this particular databases (multiple SQLInterfaces can use the same base
-    // interface)
-    //private Hashtable<String, SQLInterfaceBase> sqlServerBaseInterfaces_;
-    //private SQLInterfaceBase sib;
-
-    // this maps indexId's to the IndexInterface that accesses them.
-    /** The index interfaces_. */
-    private Hashtable<String, IndexInterface> indexInterfaces_;
 
     // This maps all available coding scheme "localNames" to the internal coding
     // scheme name
@@ -290,30 +265,8 @@ public class ResourceManager implements SystemResourceService {
 
         // go through all of the index locations, finding the right index for
         // each code system.
-        // initialize the index readers.
-        HashSet<String> indexLocations = systemVars_.getIndexLocations();
-        Iterator<String> iterator = indexLocations.iterator();
 
-        indexInterfaces_ = new Hashtable<String, IndexInterface>();
         codingSchemeToIndexMap_ = new Hashtable<String, String>();
-
-        while (iterator.hasNext()) {
-            String location = iterator.next();
-
-            File temp = new File(location);
-            if (!temp.exists() || !temp.isDirectory()) {
-                logger_.error("Bad index location " + location);
-            } else {
-
-                IndexInterface is = new IndexInterface(location);
-				indexInterfaces_.put(location, is);
-
-				ArrayList<String> keys = is.getCodeSystemKeys();
-				for (int i = 0; i < keys.size(); i++) {
-				    codingSchemeToIndexMap_.put(keys.get(i), location);
-				}
-            }
-        }
       
         // Start up a thread to handle scheduled deactivations
         fdt_ = new FutureDeactivatorThread();
@@ -339,22 +292,6 @@ public class ResourceManager implements SystemResourceService {
             }
         }
         historySqlServerInterfaces_ = temp;
-    }
-
-    /**
-     * Reread auto load indexes.
-     * 
-     * @throws LBInvocationException the LB invocation exception
-     * @throws UnexpectedInternalError the unexpected internal error
-     */
-    public void rereadAutoLoadIndexes() throws LBInvocationException, UnexpectedInternalError {
-        // This wont handle removes - but does handle additions.
-        IndexInterface is = indexInterfaces_.get(getSystemVariables().getAutoLoadIndexLocation());
-        is.initCodingSchemes();
-        ArrayList<String> keys = is.getCodeSystemKeys();
-        for (int i = 0; i < keys.size(); i++) {
-            codingSchemeToIndexMap_.put(keys.get(i), getSystemVariables().getAutoLoadIndexLocation());
-        }
     }
 
     /**
@@ -908,43 +845,6 @@ public class ResourceManager implements SystemResourceService {
     }
 
     /**
-     * Gets the index interface.
-     * 
-     * @param internalCodingSchemeName the internal coding scheme name
-     * @param internalVersionString the internal version string
-     * 
-     * @return the index interface
-     * 
-     * @throws MissingResourceException the missing resource exception
-     */
-    public IndexInterface getIndexInterface(String internalCodingSchemeName, String internalVersionString)
-            throws MissingResourceException {
-        logger_.debug("Returning index interface for " + internalCodingSchemeName + " " + internalVersionString);
-        LocalCodingScheme lcs = new LocalCodingScheme();
-        lcs.codingSchemeName = internalCodingSchemeName;
-        lcs.version = internalVersionString;
-
-        String indexKey = codingSchemeToIndexMap_.get(lcs.getKey());
-
-        if (indexKey == null) {
-            throw new MissingResourceException("No index available for " + lcs.getKey());
-        }
-
-        return indexInterfaces_.get(indexKey);
-    }
-
-    /**
-     * Gets the meta data index interface.
-     * 
-     * @return the meta data index interface
-     */
-    public IndexInterface getMetaDataIndexInterface() {
-        logger_.debug("Returning MetaData index interface");
-        // metadata index is always in the autoload index location
-        return indexInterfaces_.get(systemVars_.getAutoLoadIndexLocation());
-    }
-
-    /**
      * Gets the all sql interfaces.
      * 
      * @return the all sql interfaces
@@ -1143,14 +1043,6 @@ public class ResourceManager implements SystemResourceService {
                     url = this.constructJdbcUrlForDeprecatedMultiDbMode(url, dbName);
                     DBUtility.dropDatabase(url, systemVars_.getAutoLoadDBDriver(), dbName,
                             systemVars_.getAutoLoadDBUsername(), systemVars_.getAutoLoadDBPassword());
-                }
-
-                // all automatic code systems are in a single index interface -
-                // so need to clean that
-                // up from within.
-                // mturk 1/8/2009 -- added check for null indexId value
-                if (indexId != null) {
-                    indexInterfaces_.get(indexId).deleteIndex(lcs.codingSchemeName, lcs.version);
                 }
 
                 // clean up the localName - internal name / version map

@@ -18,15 +18,13 @@
  */
 package org.lexevs.dao.index.lucenesupport;
 
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.MultiReader;
+import org.apache.lucene.search.IndexSearcher;
+import org.lexevs.dao.index.lucenesupport.LuceneDirectoryFactory.NamedDirectory;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.MultiReader;
-import org.apache.lucene.search.MultiSearcher;
-import org.apache.lucene.search.Searchable;
-import org.lexevs.dao.index.lucenesupport.LuceneDirectoryFactory.NamedDirectory;
 
 public class MultiBaseLuceneIndexTemplate extends BaseLuceneIndexTemplate {
 	
@@ -47,13 +45,14 @@ public class MultiBaseLuceneIndexTemplate extends BaseLuceneIndexTemplate {
 		}
 	}
 
-	protected MultiSearcher createIndexSearcher(List<NamedDirectory> namedDirectories) throws Exception {
-		List<Searchable> searchables = new ArrayList<Searchable>();
-		
+	protected IndexSearcher createIndexSearcher(List<NamedDirectory> namedDirectories) throws Exception {
+		List<IndexReader> readers = new ArrayList<IndexReader>();
+
 		for(NamedDirectory dir : namedDirectories) {
-			searchables.add(dir.getIndexSearcher());
+            readers.add(dir.getIndexReader());
 		}
-		return new MultiSearcher(searchables.toArray(new Searchable[searchables.size()]));
+
+		return new IndexSearcher(new MultiReader(readers.toArray(new IndexReader[readers.size()])));
 	}
 	
 	protected MultiReader createIndexReader(List<NamedDirectory> namedDirectories) throws Exception {
@@ -67,21 +66,7 @@ public class MultiBaseLuceneIndexTemplate extends BaseLuceneIndexTemplate {
 
 	@Override
 	public void optimize() {
-		for(NamedDirectory namedDirectory : this.namedDirectories) {
-		try {
-			IndexWriter writer = 
-				createIndexWriter(namedDirectory);
-			
-			if(! namedDirectory.getIndexReader().isOptimized()){
-				writer.optimize();
-			}
-			
-			namedDirectory.refresh();
-			
-			} catch (Exception e) {
-				throw new RuntimeException(e);
-			} 
-		}
+        //
 	}
 
 	protected <T> T doInIndexWriter(IndexWriterCallback<T> callback) {

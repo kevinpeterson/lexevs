@@ -18,11 +18,6 @@
  */
 package org.LexGrid.LexBIG.Impl.dataAccess;
 
-import java.io.File;
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.HashSet;
-
 import org.LexGrid.LexBIG.Exceptions.LBInvocationException;
 import org.LexGrid.LexBIG.Exceptions.LBParameterException;
 import org.LexGrid.LexBIG.Utility.logging.LgLoggerIF;
@@ -34,7 +29,10 @@ import org.lexevs.registry.service.XmlRegistry.HistoryEntry;
 import org.lexevs.system.ResourceManager;
 import org.lexevs.system.constants.SystemVariables;
 
-import edu.mayo.informatics.indexer.api.IndexerService;
+import java.io.File;
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.HashSet;
 
 /**
  * This class implements methods useful for cleaning up orphaned databases and
@@ -229,9 +227,6 @@ public class CleanUpUtility {
                         + "' does not exist, or is not a folder");
             }
 
-            IndexerService is = new IndexerService(indexParentFolder.getAbsolutePath(), false);
-            is.deleteIndex(index);
-            is.getMetaData().removeAllIndexMetaDataValue(index);
         } catch (LBParameterException e) {
             throw e;
         } catch (Exception e) {

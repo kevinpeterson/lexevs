@@ -18,24 +18,20 @@
  */
 package org.lexevs.dao.index.lucene.v2010.metadata;
 
-import java.util.List;
-
 import org.LexGrid.LexBIG.DataModel.Collections.AbsoluteCodingSchemeVersionReferenceList;
 import org.LexGrid.LexBIG.DataModel.Collections.MetadataPropertyList;
-import org.LexGrid.LexBIG.DataModel.Core.AbsoluteCodingSchemeVersionReference;
 import org.LexGrid.LexBIG.DataModel.Core.MetadataProperty;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.index.TermEnum;
+import org.apache.lucene.index.*;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.TermQuery;
 import org.lexevs.dao.index.access.metadata.MetadataDao;
-import org.lexevs.dao.index.lucenesupport.LuceneIndexTemplate;
 import org.lexevs.dao.index.lucenesupport.BaseLuceneIndexTemplate.IndexReaderCallback;
+import org.lexevs.dao.index.lucenesupport.LuceneIndexTemplate;
 import org.lexevs.dao.index.metadata.BaseMetaDataLoader;
+
+import java.util.List;
 
 public class LuceneMetadataDao implements MetadataDao {
 	
@@ -56,17 +52,20 @@ public class LuceneMetadataDao implements MetadataDao {
 	       AbsoluteCodingSchemeVersionReferenceList result = new AbsoluteCodingSchemeVersionReferenceList();
 
            try {
-        	   TermEnum te = luceneIndexTemplate.executeInIndexReader(new IndexReaderCallback<TermEnum>() {
+        	   TermsEnum te = luceneIndexTemplate.executeInIndexReader(new IndexReaderCallback<TermsEnum>() {
 
 				@Override
-				public TermEnum doInIndexReader(IndexReader indexReader)
+				public TermsEnum doInIndexReader(IndexReader indexReader)
 						throws Exception {
-					return indexReader.terms(new Term("codingSchemeNameVersion", ""));
-				}  
+                    Fields fields = MultiFields.getFields(indexReader);
+
+                    return fields.terms("codingSchemeNameVersion").iterator(null);
+				}
         	   });
 
+               /* TODO
 			   boolean hasNext = true;
-			   while (hasNext && te.term() != null && te.term().field().equals("codingSchemeNameVersion")) {
+			   while (hasNext && te.term() != null && te.term()..equals("codingSchemeNameVersion")) {
 			       Query temp = new TermQuery(new Term(te.term().field(), te.term().text()));
 
 			       List<ScoreDoc> d = this.luceneIndexTemplate.search(temp, null);
@@ -84,6 +83,7 @@ public class LuceneMetadataDao implements MetadataDao {
 			       hasNext = te.next();
 			   }
 			   te.close();
+			   */
 			   
 			   return result;
 		} catch (Exception e) {

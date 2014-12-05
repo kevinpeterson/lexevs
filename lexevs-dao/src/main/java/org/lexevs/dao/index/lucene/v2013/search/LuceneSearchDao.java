@@ -18,19 +18,12 @@
  */
 package org.lexevs.dao.index.lucene.v2013.search;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Filter;
-import org.apache.lucene.search.HitCollector;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.ScoreDocComparator;
 import org.apache.lucene.search.TermQuery;
 import org.lexevs.dao.database.utility.DaoUtility;
 import org.lexevs.dao.index.access.search.SearchDao;
@@ -39,6 +32,9 @@ import org.lexevs.dao.index.lucene.AbstractFilteringLuceneIndexTemplateDao;
 import org.lexevs.dao.index.lucenesupport.LuceneIndexTemplate;
 import org.lexevs.dao.index.lucenesupport.custom.NonScoringTermQuery;
 import org.lexevs.dao.index.version.LexEvsIndexFormatVersion;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The Class LuceneEntityDao.
@@ -51,13 +47,6 @@ public class LuceneSearchDao extends AbstractFilteringLuceneIndexTemplateDao imp
 	public static LexEvsIndexFormatVersion supportedIndexVersion2013 = LexEvsIndexFormatVersion.parseStringToVersion("2013");
 	
 	private LuceneIndexTemplate luceneIndexTemplate;
-	
-	private static final Comparator<ScoreDoc> SCORE_DOC_COMPARATOR = new Comparator<ScoreDoc>(){
-		@Override
-		public int compare(ScoreDoc o1, ScoreDoc o2) {
-			return ScoreDocComparator.RELEVANCE.compare(o1, o2);
-		}
-	};
 
 	@Override
 	public void addDocuments(String codingSchemeUri, String version,
@@ -93,20 +82,8 @@ public class LuceneSearchDao extends AbstractFilteringLuceneIndexTemplateDao imp
 	
 			final List<ScoreDoc> docs = new ArrayList<ScoreDoc>();
 					
-			HitCollector collector = new HitCollector(){
+			//TODO:
 
-				@Override
-				public void collect(int doc, float score) {
-					ScoreDoc scoreDoc = new ScoreDoc(doc, score);
-					docs.add(scoreDoc);
-				}
-				
-			};
-			
-			template.search(query, null, collector);
-
-			Collections.sort(docs, SCORE_DOC_COMPARATOR);
-			
 			return docs;
 		} catch (Exception e) {
 			throw new RuntimeException(e);

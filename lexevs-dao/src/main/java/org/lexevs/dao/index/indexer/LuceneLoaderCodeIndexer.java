@@ -18,9 +18,6 @@
  */
 package org.lexevs.dao.index.indexer;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.LexGrid.LexBIG.LexBIGService.CodedNodeSet.PropertyType;
 import org.LexGrid.commonTypes.Property;
 import org.LexGrid.commonTypes.PropertyQualifier;
@@ -30,10 +27,13 @@ import org.LexGrid.concepts.Presentation;
 import org.apache.lucene.document.Document;
 import org.lexevs.dao.database.ibatis.entity.model.IdableEntity;
 import org.lexevs.dao.database.utility.DaoUtility;
-import org.lexevs.dao.index.lucene.v2010.entity.LuceneEntityDao;
+import org.lexevs.dao.index.access.entity.EntityDao;
 import org.lexevs.dao.index.version.LexEvsIndexFormatVersion;
 import org.lexevs.system.constants.SystemVariables;
 import org.lexevs.system.service.SystemResourceService;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The Class LuceneLoaderCodeIndexer.
@@ -51,7 +51,7 @@ public class LuceneLoaderCodeIndexer extends LuceneLoaderCode implements EntityI
 	/** The current index version. */
 	private String currentIndexVersion = "2010";
 	
-	private LuceneEntityDao luceneEntityDao;
+	private EntityDao luceneEntityDao;
 
 	/**
 	 * Instantiates a new lucene loader code indexer.
@@ -257,11 +257,11 @@ public class LuceneLoaderCodeIndexer extends LuceneLoaderCode implements EntityI
 		this.systemVariables = systemVariables;
 	}
 
-	public LuceneEntityDao getLuceneEntityDao() {
+	public EntityDao getLuceneEntityDao() {
 		return luceneEntityDao;
 	}
 
-	public void setLuceneEntityDao(LuceneEntityDao luceneEntityDao) {
+	public void setLuceneEntityDao(EntityDao luceneEntityDao) {
 		this.luceneEntityDao = luceneEntityDao;
 	}
 

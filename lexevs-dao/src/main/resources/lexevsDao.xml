@@ -836,7 +836,7 @@
 	
 	<bean id="baseMetaDataLoader" class="org.lexevs.dao.index.metadata.BaseMetaDataLoader" />
 
-	<bean id="luceneIndexEntityDao" class="org.lexevs.dao.index.lucene.v2010.entity.LuceneEntityDao">
+	<bean id="luceneIndexEntityDao" class="org.lexevs.dao.index.lucene.v2014.entity.LuceneEntityDao">
 		<property name="luceneIndexTemplate" ref="luceneEntityIndexTemplate"/>
 		<property name="indexRegistry" ref="indexRegistry"/>
 	</bean>

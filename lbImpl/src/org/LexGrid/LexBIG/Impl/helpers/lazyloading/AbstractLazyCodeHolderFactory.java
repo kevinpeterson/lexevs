@@ -18,8 +18,6 @@
  */
 package org.LexGrid.LexBIG.Impl.helpers.lazyloading;
 
-import java.util.List;
-
 import org.LexGrid.LexBIG.DataModel.Core.AbsoluteCodingSchemeVersionReference;
 import org.LexGrid.LexBIG.Exceptions.LBInvocationException;
 import org.LexGrid.LexBIG.Exceptions.LBParameterException;
@@ -29,17 +27,17 @@ import org.LexGrid.LexBIG.Impl.helpers.CodeToReturn;
 import org.LexGrid.LexBIG.Impl.helpers.DefaultCodeHolder;
 import org.LexGrid.LexBIG.Utility.Constructors;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.Filter;
-import org.apache.lucene.search.FilteredQuery;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.BooleanClause.Occur;
+import org.apache.lucene.search.*;
 import org.compass.core.lucene.support.ChainedFilter;
 import org.lexevs.dao.index.service.IndexServiceManager;
 import org.lexevs.dao.index.service.entity.EntityIndexService;
 import org.lexevs.locator.LexEvsServiceLocator;
 import org.lexevs.system.service.SystemResourceService;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * A factory for creating LazyCodeHolder objects.
@@ -68,10 +66,10 @@ public abstract class AbstractLazyCodeHolderFactory implements CodeHolderFactory
             Constructors.createAbsoluteCodingSchemeVersionReference(
                 uri, internalVersionString);
 
-        List<ScoreDoc> scoreDocs = entityService.query(
-                ref.getCodingSchemeURN(), 
-                ref.getCodingSchemeVersion(), 
-                        combinedQuery, bitSetQueries);
+        Set<AbsoluteCodingSchemeVersionReference> refs = new HashSet<AbsoluteCodingSchemeVersionReference>();
+        refs.add(ref);
+
+        List<ScoreDoc> scoreDocs = entityService.query(refs, combinedQuery, bitSetQueries);
 
         return buildCodeHolder(internalCodeSystemName, internalVersionString, scoreDocs);
     }
@@ -101,8 +99,11 @@ public abstract class AbstractLazyCodeHolderFactory implements CodeHolderFactory
         } else {
             query = combinedQuery;
         }
-        
-        List<ScoreDoc> scoreDocs = entityService.query(uri, internalVersionString, query);
+
+        Set<AbsoluteCodingSchemeVersionReference> refs = new HashSet<AbsoluteCodingSchemeVersionReference>();
+        refs.add(Constructors.createAbsoluteCodingSchemeVersionReference(uri, internalVersionString));
+
+        List<ScoreDoc> scoreDocs = entityService.query(refs, query);
 
         return buildCodeHolder(internalCodeSystemName, internalVersionString, scoreDocs);
     }
@@ -127,7 +128,7 @@ public abstract class AbstractLazyCodeHolderFactory implements CodeHolderFactory
         
         List<ScoreDoc> scoreDocs = LexEvsServiceLocator.getInstance().
             getIndexServiceManager().
-                getEntityIndexService().queryCommonIndex(references, query);
+                getEntityIndexService().query(new HashSet<AbsoluteCodingSchemeVersionReference>(references), query);
         
         AdditiveCodeHolder codeHolder = new DefaultCodeHolder();
         

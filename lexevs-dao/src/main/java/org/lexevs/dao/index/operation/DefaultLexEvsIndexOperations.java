@@ -18,33 +18,19 @@
  */
 package org.lexevs.dao.index.operation;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.LexGrid.LexBIG.DataModel.Core.AbsoluteCodingSchemeVersionReference;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.index.TermEnum;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.BooleanClause.Occur;
 import org.lexevs.dao.index.access.IndexDaoManager;
 import org.lexevs.dao.index.indexer.IndexCreator;
 import org.lexevs.dao.index.indexer.LuceneLoaderCode;
+import org.lexevs.dao.index.indexer.MetaData;
 import org.lexevs.dao.index.indexregistry.IndexRegistry;
-import org.lexevs.dao.index.lucenesupport.BaseLuceneIndexTemplate.IndexReaderCallback;
-import org.lexevs.dao.index.lucenesupport.LuceneIndexTemplate;
-import org.lexevs.locator.LexEvsServiceLocator;
 import org.lexevs.logging.AbstractLoggingBean;
 import org.lexevs.system.model.LocalCodingScheme;
 
-import edu.mayo.informatics.indexer.api.exceptions.InternalErrorException;
-import edu.mayo.informatics.indexer.utility.MetaData;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class DefaultLexEvsIndexOperations extends AbstractLoggingBean implements LexEvsIndexOperations {
 	
@@ -66,6 +52,7 @@ public class DefaultLexEvsIndexOperations extends AbstractLoggingBean implements
 	@Override
 	public void cleanUp(
 			final List<AbsoluteCodingSchemeVersionReference> expectedCodingSchemes, boolean reindexMissing) {
+        /* TODO
 		getLogger().warn("Starting Cleanup of Entity Lucene Index.");
 	
 		indexRegistry.getCommonLuceneIndexTemplate().executeInIndexReader(new IndexReaderCallback<Void>() {
@@ -178,6 +165,7 @@ public class DefaultLexEvsIndexOperations extends AbstractLoggingBean implements
 		});
 		
 		this.cleanupSearchIndex(expectedCodingSchemes);
+		*/
 	}
 
 	private Map<String, AbsoluteCodingSchemeVersionReference> getExpectedMap(
@@ -195,6 +183,7 @@ public class DefaultLexEvsIndexOperations extends AbstractLoggingBean implements
 	}
 	
 	protected void cleanupSearchIndex(List<AbsoluteCodingSchemeVersionReference> expectedCodingSchemes){
+        /*
 		getLogger().warn("Starting Cleanup of Search Lucene Index.");
 
 			final Map<String, AbsoluteCodingSchemeVersionReference> expectedMap = 
@@ -303,6 +292,7 @@ public class DefaultLexEvsIndexOperations extends AbstractLoggingBean implements
 			}
 			
 		});
+		*/
 	}
 	
 	protected void dropIndex(String codingSchemeName, AbsoluteCodingSchemeVersionReference reference) {
@@ -321,7 +311,7 @@ public class DefaultLexEvsIndexOperations extends AbstractLoggingBean implements
 		String key = LocalCodingScheme.getLocalCodingScheme(codingSchemeName, reference.getCodingSchemeVersion()).getKey();
 		try {
 			metaData.removeIndexMetaDataValue(key);
-		} catch (InternalErrorException e) {
+		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}

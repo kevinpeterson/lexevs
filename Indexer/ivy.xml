@@ -17,14 +17,14 @@
     	<dependency org="org.jdom" name="jdom" rev="1.1" conf="default->*"/>
     	<dependency org="log4j" name="log4j" rev="1.2.14" conf="default" />
     	<dependency org="org.apache.lucene" name="lucene-core" conf="default"
-			rev="2.4.1" force="true"/>
-		<dependency org="org.apache.lucene" name="lucene-analyzers" conf="default"
-			rev="2.4.1" force="true"/>
+			rev="4.10.2" force="true"/>
+		<dependency org="org.apache.lucene" name="lucene-analyzers-common" conf="default"
+			rev="4.10.2" force="true"/>
 		<dependency org="org.apache.lucene" name="lucene-queries" conf="default"
-			rev="2.4.1" force="true"/>
+			rev="4.10.2" force="true"/>
 		<dependency org="org.apache.lucene" name="lucene-regex" conf="default"
-			rev="2.4.1" force="true"/>
+			rev="3.0.3" force="true"/>
 		<dependency org="org.apache.lucene" name="lucene-snowball" conf="default"
-			rev="2.4.1" force="true"/>
+			rev="3.0.3" force="true"/>
     </dependencies>
 </ivy-module>

@@ -18,12 +18,6 @@
  */
 package org.lexevs.dao.index.service.search;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.LexGrid.LexBIG.DataModel.Core.AbsoluteCodingSchemeVersionReference;
 import org.LexGrid.LexBIG.Exceptions.LBParameterException;
 import org.LexGrid.concepts.Entity;
@@ -32,16 +26,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.BooleanFilter;
-import org.apache.lucene.search.CachingWrapperFilter;
-import org.apache.lucene.search.Filter;
-import org.apache.lucene.search.FilterClause;
-import org.apache.lucene.search.FilteredQuery;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.TermsFilter;
+import org.apache.lucene.queries.BooleanFilter;
+import org.apache.lucene.queries.FilterClause;
+import org.apache.lucene.queries.TermsFilter;
+import org.apache.lucene.search.*;
 import org.compass.core.lucene.support.ChainedFilter;
 import org.lexevs.dao.database.utility.DaoUtility;
 import org.lexevs.dao.index.access.IndexDaoManager;
@@ -49,11 +37,11 @@ import org.lexevs.dao.index.indexer.EntityIndexer;
 import org.lexevs.dao.index.indexer.IndexCreator;
 import org.lexevs.dao.index.indexer.IndexCreator.IndexOption;
 import org.lexevs.dao.index.indexer.LuceneLoaderCode;
+import org.lexevs.dao.index.indexer.MetaData;
 import org.lexevs.system.model.LocalCodingScheme;
 import org.lexevs.system.service.SystemResourceService;
 
-import edu.mayo.informatics.indexer.api.exceptions.InternalErrorException;
-import edu.mayo.informatics.indexer.utility.MetaData;
+import java.util.*;
 
 /**
  * The Class LuceneEntityIndexService.
@@ -162,7 +150,7 @@ public class LuceneSearchIndexService implements SearchIndexService {
 		String key = this.getCodingSchemeKey(reference);
 		try {
 			return StringUtils.isNotBlank(metaData.getIndexMetaDataValue(key));
-		} catch (InternalErrorException e) {
+		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -255,8 +243,8 @@ public class LuceneSearchIndexService implements SearchIndexService {
 					LuceneLoaderCode.CODING_SCHEME_URI_VERSION_KEY_FIELD,
 					LuceneLoaderCode.createCodingSchemeUriVersionKey(
 							codingSchemeUri, codingSchemeVersion));
-			TermsFilter filter = new TermsFilter();
-			filter.addTerm(term);
+
+			TermsFilter filter = new TermsFilter(term);
 			this.cachedFilters.put(key, new CachingWrapperFilter(filter));
 		}
 		return this.cachedFilters.get(key);

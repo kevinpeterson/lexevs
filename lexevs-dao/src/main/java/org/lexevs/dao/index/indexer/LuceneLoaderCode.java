@@ -19,21 +19,17 @@
 package org.lexevs.dao.index.indexer;
 
 import org.LexGrid.util.sql.lgTables.SQLTableConstants;
-import org.apache.commons.codec.language.DoubleMetaphone;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
+import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
+import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
-import org.lexevs.dao.index.lucene.v2010.entity.LuceneEntityDao;
+import org.lexevs.dao.index.access.entity.EntityDao;
 
-import edu.mayo.informatics.indexer.api.exceptions.InternalErrorException;
-import edu.mayo.informatics.indexer.api.generators.DocumentFromStringsGenerator;
-import edu.mayo.informatics.indexer.lucene.analyzers.EncoderAnalyzer;
-import edu.mayo.informatics.indexer.lucene.analyzers.NormAnalyzer;
-import edu.mayo.informatics.indexer.lucene.analyzers.SnowballAnalyzer;
-import edu.mayo.informatics.indexer.lucene.analyzers.StringAnalyzer;
-import edu.mayo.informatics.indexer.lucene.analyzers.WhiteSpaceLowerCaseAnalyzer;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Base Lucene Loader code.
@@ -136,14 +132,10 @@ public abstract class LuceneLoaderCode {
     /** The Constant QUALIFIER_NAME_VALUE_SPLIT_TOKEN. */
     public static final String QUALIFIER_NAME_VALUE_SPLIT_TOKEN = ":";
  
-    private LuceneEntityDao luceneEntityDao;
+    private EntityDao luceneEntityDao;
     
     protected LuceneLoaderCode(){
-    	try {
-			this.initIndexes();
-		} catch (InternalErrorException e) {
-			throw new RuntimeException(e);
-		}
+    	this.initIndexes();
     }
 
     // by default, the index stores a copy of most of the information. Switching
@@ -155,17 +147,14 @@ public abstract class LuceneLoaderCode {
     // TODO add a GUI option for the codeBoundry stuff.
     
     /** The literal analyzer. */
-    public static Analyzer literalAnalyzer = new WhiteSpaceLowerCaseAnalyzer(new String[] {},
-            new char[]{}, new char[]{}); 
+    public static Analyzer literalAnalyzer = new WhitespaceAnalyzer();
     /**
      * Adds the entity.
      * 
      * @param codingSchemeName the coding scheme name
      * @param codingSchemeId the coding scheme id
      * @param codingSchemeVersion the coding scheme version
-     * @param entityId the entity id
      * @param entityNamespace the entity namespace
-     * @param entityType the entity type
      * @param entityDescription the entity description
      * @param propertyType the property type
      * @param propertyName the property name
@@ -182,8 +171,7 @@ public abstract class LuceneLoaderCode {
      * @param sources the sources
      * @param usageContexts the usage contexts
      * @param qualifiers the qualifiers
-     * @param stc the stc
-     * 
+     *
      * @throws Exception the exception
      */
     protected Document addEntity(String codingSchemeName, String codingSchemeId, String codingSchemeVersion, 
@@ -405,54 +393,59 @@ public abstract class LuceneLoaderCode {
 
     /**
      * Inits the indexes.
-     * 
-     * @param indexName the index name
-     * @param indexLocation the index location
-     * 
-     * @throws InternalErrorException the internal error exception
      */
-    protected void initIndexes() throws InternalErrorException {
+    protected void initIndexes() {
     	this.analyzer_ = getAnaylzer();
         generator_ = new DocumentFromStringsGenerator();
     }
     
     public static PerFieldAnalyzerWrapper getAnaylzer() {
-    	   // no stop words, default character removal set.
-    	PerFieldAnalyzerWrapper analyzer = new PerFieldAnalyzerWrapper(new WhiteSpaceLowerCaseAnalyzer(new String[] {},
-                WhiteSpaceLowerCaseAnalyzer.getDefaultCharRemovalSet(), lexGridWhiteSpaceIndexSet));
-        
+        Map<String,Analyzer> analyzerPerField = new HashMap<String,Analyzer>();
+        analyzerPerField.put(LITERAL_PROPERTY_VALUE_FIELD, literalAnalyzer);
+        analyzerPerField.put(LITERAL_AND_REVERSE_PROPERTY_VALUE_FIELD, literalAnalyzer);
+
+
         //add a literal analyzer -- keep all special characters
-        analyzer.addAnalyzer(LITERAL_PROPERTY_VALUE_FIELD, literalAnalyzer); 
-        analyzer.addAnalyzer(LITERAL_AND_REVERSE_PROPERTY_VALUE_FIELD, literalAnalyzer);    
 
         if (doubleMetaphoneEnabled_) {
+            /*
             EncoderAnalyzer temp = new EncoderAnalyzer(new DoubleMetaphone(), new String[] {},
                     WhiteSpaceLowerCaseAnalyzer.getDefaultCharRemovalSet(), lexGridWhiteSpaceIndexSet);
-            analyzer.addAnalyzer(DOUBLE_METAPHONE_PROPERTY_VALUE_FIELD, temp);
+            analyzerPerField.put(DOUBLE_METAPHONE_PROPERTY_VALUE_FIELD, temp);
+            */
         }
 
         if (normEnabled_) {
+            /*
             try {
                 NormAnalyzer temp = new NormAnalyzer(false, new String[] {}, WhiteSpaceLowerCaseAnalyzer
                         .getDefaultCharRemovalSet(), lexGridWhiteSpaceIndexSet);
-                analyzer.addAnalyzer(NORM_PROPERTY_VALUE_FIELD, temp);
+                analyzerPerField.put(NORM_PROPERTY_VALUE_FIELD, temp);
             } catch (NoClassDefFoundError e) {
                //
             }
+            */
         }
 
         if (stemmingEnabled_) {
+            /*
             SnowballAnalyzer temp = new SnowballAnalyzer(false, "English", new String[] {}, WhiteSpaceLowerCaseAnalyzer
                     .getDefaultCharRemovalSet(), lexGridWhiteSpaceIndexSet);
-            analyzer.addAnalyzer(STEMMING_PROPERTY_VALUE_FIELD, temp);
+            analyzerPerField.put(STEMMING_PROPERTY_VALUE_FIELD, temp);
+            */
         }
 
         // these fields just get simple analyzing.
+        /*
         StringAnalyzer sa = new StringAnalyzer(STRING_TOKEINZER_TOKEN);
-        analyzer.addAnalyzer("sources", sa);
-        analyzer.addAnalyzer("usageContexts", sa);
-        analyzer.addAnalyzer("qualifiers", sa);
-        
+        analyzerPerField.put("sources", sa);
+        analyzerPerField.put("usageContexts", sa);
+        analyzerPerField.put("qualifiers", sa);
+        */
+
+        PerFieldAnalyzerWrapper analyzer = new PerFieldAnalyzerWrapper(new StandardAnalyzer(), analyzerPerField);
+
+
         return analyzer;
     }
 
@@ -491,11 +484,11 @@ public abstract class LuceneLoaderCode {
     	return createCodingSchemeUriVersionKey(uri, version) + "-" + code + "-" + namespace;
     }
 
-    public void setLuceneEntityDao(LuceneEntityDao luceneEntityDao) {
+    public void setLuceneEntityDao(EntityDao luceneEntityDao) {
 		this.luceneEntityDao = luceneEntityDao;
 	}
 
-	public LuceneEntityDao getLuceneEntityDao() {
+	public EntityDao getLuceneEntityDao() {
 		return luceneEntityDao;
 	}
 	

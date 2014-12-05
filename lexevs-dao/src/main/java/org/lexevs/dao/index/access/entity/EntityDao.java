@@ -18,16 +18,16 @@
  */
 package org.lexevs.dao.index.access.entity;
 
-import java.util.List;
-
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.FieldSelector;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.lexevs.dao.index.access.LexEvsIndexFormatVersionAwareDao;
+
+import java.util.List;
+import java.util.Set;
 
 /**
  * The Interface EntityDao.
@@ -51,7 +51,7 @@ public interface EntityDao extends LexEvsIndexFormatVersionAwareDao {
 	public Document getDocumentById(String codingSchemeUri, String version, int id);
 	
 	public Document getDocumentById(String codingSchemeUri, String version,
-			int id, FieldSelector fieldSelector);
+			int id, Set<String> fields);
 
 	public Query getMatchAllDocsQuery(
 			String codingSchemeUri, String version);

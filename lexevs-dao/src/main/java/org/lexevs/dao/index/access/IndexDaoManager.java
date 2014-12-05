@@ -18,24 +18,19 @@
  */
 package org.lexevs.dao.index.access;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.LexGrid.LexBIG.DataModel.Core.AbsoluteCodingSchemeVersionReference;
 import org.apache.commons.lang.StringUtils;
-import org.lexevs.dao.index.access.entity.CommonEntityDao;
 import org.lexevs.dao.index.access.entity.EntityDao;
 import org.lexevs.dao.index.access.metadata.MetadataDao;
 import org.lexevs.dao.index.access.search.SearchDao;
+import org.lexevs.dao.index.indexer.MetaData;
 import org.lexevs.dao.index.indexregistry.IndexRegistry;
-import org.lexevs.dao.index.lucene.v2010.entity.SingleTemplateDisposableLuceneCommonEntityDao;
-import org.lexevs.dao.index.lucenesupport.LuceneIndexTemplate;
 import org.lexevs.dao.index.version.LexEvsIndexFormatVersion;
 import org.lexevs.system.model.LocalCodingScheme;
 import org.lexevs.system.service.SystemResourceService;
 import org.springframework.util.Assert;
 
-import edu.mayo.informatics.indexer.utility.MetaData;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The Class IndexDaoManager.
@@ -77,15 +72,7 @@ public class IndexDaoManager {
 		
 		return this.searchDaos.get(0);
 	}
-	
-	public CommonEntityDao getCommonEntityDao(List<AbsoluteCodingSchemeVersionReference> codingSchemes) {
 
-		LuceneIndexTemplate template = 
-			indexRegistry.getCommonLuceneIndexTemplate(codingSchemes);
-
-		return new SingleTemplateDisposableLuceneCommonEntityDao(indexRegistry, template, codingSchemes);
-	}
-	
 	public MetadataDao getMetadataDao(){
 		Assert.state(this.metadataDaos.size() == 1, "Currently Metadata Daos are not Versionable.");
 		

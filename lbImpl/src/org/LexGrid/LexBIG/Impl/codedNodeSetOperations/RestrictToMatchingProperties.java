@@ -18,11 +18,6 @@
  */
 package org.LexGrid.LexBIG.Impl.codedNodeSetOperations;
 
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.regex.Pattern;
-
 import org.LexGrid.LexBIG.DataModel.Collections.LocalNameList;
 import org.LexGrid.LexBIG.DataModel.Collections.NameAndValueList;
 import org.LexGrid.LexBIG.Exceptions.LBInvocationException;
@@ -39,13 +34,17 @@ import org.LexGrid.naming.SupportedProperty;
 import org.LexGrid.util.sql.lgTables.SQLTableConstants;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.BooleanClause.Occur;
+import org.apache.lucene.search.regex.RegexQuery;
 import org.lexevs.locator.LexEvsServiceLocator;
 
-import edu.mayo.informatics.indexer.lucene.query.SerializableRegexQuery;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Holder for the RestrictToMatchingProperties operation.
@@ -74,7 +73,7 @@ public class RestrictToMatchingProperties extends RestrictToProperties implement
         // Until the RegexQuery is completely serializable this cannot be done
         // until the code is on the client side
         for (int i = 0; i < queryTerms_.size(); i++) {
-            textQuery_.add(new BooleanClause(new SerializableRegexQuery(queryTerms_.get(i)), Occur.MUST));
+            textQuery_.add(new BooleanClause(new RegexQuery(queryTerms_.get(i)), Occur.MUST));
         }
         return textQuery_;
     }

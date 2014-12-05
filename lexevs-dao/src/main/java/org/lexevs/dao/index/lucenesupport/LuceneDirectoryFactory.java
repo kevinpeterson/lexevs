@@ -21,13 +21,13 @@ package org.lexevs.dao.index.lucenesupport;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.lucene.index.CorruptIndexException;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.*;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.LockObtainFailedException;
+import org.apache.lucene.store.MMapDirectory;
+import org.apache.lucene.util.Version;
 import org.lexevs.dao.index.indexer.LuceneLoaderCode;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.core.io.Resource;
@@ -42,7 +42,6 @@ public class LuceneDirectoryFactory implements FactoryBean {
 
 	@Override
 	public Object getObject() throws Exception {
-		
 		return luceneDirectoryCreator.getDirectory(indexName, indexDirectory.getFile());
 	}
 	
@@ -129,18 +128,19 @@ public class LuceneDirectoryFactory implements FactoryBean {
 		}
 
 		protected IndexReader createIndexReader(Directory directory) throws Exception {
-			IndexReader reader = IndexReader.open(directory, true);
+			IndexReader reader = IndexReader.open(directory);
 			return reader;
 		}
 
 		private void initIndexDirectory(Directory directory) throws IOException,
 			CorruptIndexException, LockObtainFailedException {
 
-			if(!IndexReader.indexExists(directory)){
+			if(!DirectoryReader.indexExists(directory)){
 				IndexWriter writer = new IndexWriter(
 						directory, 
-						LuceneLoaderCode.getAnaylzer(), 
-						IndexWriter.MaxFieldLength.UNLIMITED);
+						new IndexWriterConfig(
+                                Version.LATEST,
+                                LuceneLoaderCode.getAnaylzer()));
 
 				writer.close();
 			}
@@ -148,14 +148,13 @@ public class LuceneDirectoryFactory implements FactoryBean {
 		
 		public void refresh() {
 			try {
-				IndexReader reopenedReader = this.indexReader.reopen();
+				IndexReader reopenedReader = this.indexReader;
 				
 				if(reopenedReader != this.indexReader){
 					this.indexReader.close();
 					this.indexReader = this.createIndexReader(this.directory);
 				}
 				
-				this.indexSearcher.close();
 				this.indexSearcher = this.createIndexSearcher(this.indexReader);
 			} catch (Exception e) {
 				throw new RuntimeException(e);
@@ -164,12 +163,11 @@ public class LuceneDirectoryFactory implements FactoryBean {
 
 		public void remove() {
 			try {
-				this.indexSearcher.close();
 				this.indexReader.close();
 
 				if(this.directory instanceof FSDirectory) {
-					FSDirectory dir = (FSDirectory)this.directory;
-					FileUtils.deleteDirectory(dir.getFile());
+                    FSDirectory dir = (FSDirectory)this.directory;
+					FileUtils.deleteDirectory(dir.getDirectory());
 				}
 			} catch (IOException e) {
 				throw new RuntimeException(e);

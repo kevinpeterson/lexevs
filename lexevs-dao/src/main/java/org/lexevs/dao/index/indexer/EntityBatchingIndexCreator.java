@@ -18,10 +18,6 @@
  */
 package org.lexevs.dao.index.indexer;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
 import org.LexGrid.LexBIG.DataModel.Core.AbsoluteCodingSchemeVersionReference;
 import org.LexGrid.LexBIG.Utility.logging.LgLoggerIF;
 import org.LexGrid.concepts.Entity;
@@ -35,7 +31,9 @@ import org.lexevs.dao.index.factory.IndexLocationFactory;
 import org.lexevs.system.constants.SystemVariables;
 import org.lexevs.system.service.SystemResourceService;
 
-import edu.mayo.informatics.indexer.utility.MetaData;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * The Class EntityBatchingIndexCreator.
