@@ -18,29 +18,12 @@
  */
 package org.lexevs.dao.index.model;
 
-/**
- * The Interface IndexableResourceBuilder.
- * 
- * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
- */
-public interface IndexableResourceBuilder<I,O> {
-	
-	/**
-	 * Builds the indexable resource.
-	 * 
-	 * @param input the input
-	 * 
-	 * @return the o
-	 */
-	public O buildIndexableResource(I input);
-	
-	/**
-	 * Resolve id.
-	 * 
-	 * @param input the input
-	 * 
-	 * @return the string
-	 */
-	public String resolveId(I input);
+import org.apache.lucene.document.Document;
+
+import java.util.List;
+
+public interface BlockIndexable {
+
+	public List<Document> getDocuments();
 
 }

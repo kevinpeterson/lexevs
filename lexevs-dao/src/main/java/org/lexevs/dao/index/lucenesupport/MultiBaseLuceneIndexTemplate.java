@@ -29,11 +29,7 @@ import java.util.List;
 public class MultiBaseLuceneIndexTemplate extends BaseLuceneIndexTemplate {
 	
 	private List<NamedDirectory> namedDirectories;
-	
-	public MultiBaseLuceneIndexTemplate(){
-		super();
-	}
-	
+
 	public MultiBaseLuceneIndexTemplate(List<NamedDirectory> namedDirectories){
 		super();
 		try {

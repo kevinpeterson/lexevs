@@ -22,12 +22,13 @@ import org.LexGrid.LexBIG.DataModel.Core.AbsoluteCodingSchemeVersionReference;
 import org.LexGrid.LexBIG.Utility.logging.LgLoggerIF;
 import org.LexGrid.concepts.Entity;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.document.Document;
 import org.lexevs.dao.database.service.entity.EntityService;
 import org.lexevs.dao.index.access.IndexDaoManager;
 import org.lexevs.dao.index.access.entity.EntityDao;
-import org.lexevs.dao.index.access.search.SearchDao;
 import org.lexevs.dao.index.factory.IndexLocationFactory;
+import org.lexevs.dao.index.model.IndexableEntity;
+import org.lexevs.dao.index.model.IndexableProperty;
+import org.lexevs.dao.index.model.IndexedEntity;
 import org.lexevs.system.constants.SystemVariables;
 import org.lexevs.system.service.SystemResourceService;
 
@@ -60,9 +61,11 @@ public class EntityBatchingIndexCreator implements IndexCreator {
 
 	private Analyzer analyzer = LuceneLoaderCode.getAnaylzer();
 	
-	private EntityIndexer entityIndexer;
+	private Indexer<IndexedEntity> entityIndexer;
+
+    private Indexer<IndexableProperty> propertyIndexer;
 	
-	private EntityIndexer searchIndexer;
+	//private EntityIndexer searchIndexer;
 	
 	private LgLoggerIF logger;
 	
@@ -99,13 +102,12 @@ public class EntityBatchingIndexCreator implements IndexCreator {
 	public String index(AbsoluteCodingSchemeVersionReference reference, EntityIndexerProgressCallback callback, boolean onlyRegister, IndexOption option) {	
 		String indexName = this.getIndexName(reference);
 		
-		addEntityIndexMetadata(reference, indexName, entityIndexer.getIndexerFormatVersion().getModelFormatVersion());
-		addSearchIndexMetadata(reference, this.getSearchIndexName(), searchIndexer.getIndexerFormatVersion().getModelFormatVersion());
+		//addEntityIndexMetadata(reference, indexName, entityIndexer.getIndexerFormatVersion().getModelFormatVersion());
+		//addSearchIndexMetadata(reference, this.getSearchIndexName(), searchIndexer.getIndexerFormatVersion().getModelFormatVersion());
 
 		if(!onlyRegister) {
 
 			EntityDao entityIndexService = indexDaoManager.getEntityDao(reference.getCodingSchemeURN(), reference.getCodingSchemeVersion());
-			SearchDao searchIndexService = indexDaoManager.getSearchDao();
 
 			int totalIndexedEntities = 0;
 
@@ -116,24 +118,10 @@ public class EntityBatchingIndexCreator implements IndexCreator {
 					entities.size() > 0; 
 					entities = entityService.getEntities(reference.getCodingSchemeURN(), reference.getCodingSchemeVersion(), position += batchSize, batchSize)) {
 
-				List<Document> fullEntityDocs = new ArrayList<Document>();
-				List<Document> searchDocs = new ArrayList<Document>();
+				List<IndexableEntity> blockIndexables = new ArrayList<IndexableEntity>();
 
 				for(Entity entity : entities) {
-					if(option.equals(IndexOption.BOTH) || option.equals(IndexOption.ENTITY)){
-						fullEntityDocs.addAll(
-							entityIndexer.indexEntity(
-								reference.getCodingSchemeURN(), 
-								reference.getCodingSchemeVersion(), entity));
-					}
-					
-					if(option.equals(IndexOption.BOTH) || option.equals(IndexOption.SEARCH)){
-						searchDocs.addAll(
-							searchIndexer.indexEntity(
-									reference.getCodingSchemeURN(), 
-									reference.getCodingSchemeVersion(), entity));
-					}
-					
+                    blockIndexables.add(new IndexableEntity(entity, this.entityIndexer, this.propertyIndexer));
 					totalIndexedEntities++;
 
 					if(callback != null) {
@@ -145,29 +133,15 @@ public class EntityBatchingIndexCreator implements IndexCreator {
 					}
 				}
 
-				this.getLogger().info("Flusing " + fullEntityDocs.size() + searchDocs.size() + " Documents to the Index.");
+				this.getLogger().info("Flusing " + blockIndexables.size() + " Documents to the Index.");
+
 				entityIndexService.addDocuments(
 						reference.getCodingSchemeURN(), 
-						reference.getCodingSchemeVersion(), 
-						fullEntityDocs, analyzer);
-				
-				searchIndexService.addDocuments(
-						reference.getCodingSchemeURN(), 
-						reference.getCodingSchemeVersion(), 
-						searchDocs, 
-						this.searchIndexer.getAnalyzer());
+						reference.getCodingSchemeVersion(),
+                        blockIndexables, analyzer);
 			}
 
 			this.getLogger().info("Indexing Complete. Indexed: " + totalIndexedEntities + " Entities.");
-			
-			if(! indexName.equals(IndexLocationFactory.DEFAULT_SINGLE_INDEX_NAME)) {
-				EntityDao entityIndexDao = 
-					this.indexDaoManager.getEntityDao(reference.getCodingSchemeURN(), reference.getCodingSchemeVersion());
-				
-				this.getLogger().info("In multi-directory index mode, optimizing...");
-				entityIndexDao.optimizeIndex(reference.getCodingSchemeURN(), reference.getCodingSchemeVersion());
-				this.getLogger().info("Optimizing complete.");
-			}
 		}
 		
 		return indexName;
@@ -313,20 +287,8 @@ public class EntityBatchingIndexCreator implements IndexCreator {
 		return logger;
 	}
 
-	public EntityIndexer getEntityIndexer() {
-		return entityIndexer;
-	}
-
 	public void setEntityIndexer(EntityIndexer entityIndexer) {
 		this.entityIndexer = entityIndexer;
-	}
-
-	public EntityIndexer getSearchIndexer() {
-		return searchIndexer;
-	}
-
-	public void setSearchIndexer(EntityIndexer searchIndexer) {
-		this.searchIndexer = searchIndexer;
 	}
 
 	public void setMetaData(MetaData metaData) {

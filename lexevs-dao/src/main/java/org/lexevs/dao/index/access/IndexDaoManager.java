@@ -23,7 +23,6 @@ import org.lexevs.dao.index.access.entity.EntityDao;
 import org.lexevs.dao.index.access.metadata.MetadataDao;
 import org.lexevs.dao.index.access.search.SearchDao;
 import org.lexevs.dao.index.indexer.MetaData;
-import org.lexevs.dao.index.indexregistry.IndexRegistry;
 import org.lexevs.dao.index.version.LexEvsIndexFormatVersion;
 import org.lexevs.system.model.LocalCodingScheme;
 import org.lexevs.system.service.SystemResourceService;
@@ -52,8 +51,6 @@ public class IndexDaoManager {
 	private SystemResourceService systemResourceService;
 	
 	private MetaData metaData;
-	
-	private IndexRegistry indexRegistry;
 
 	/**
 	 * Gets the entity dao.
@@ -64,7 +61,7 @@ public class IndexDaoManager {
 	 * @return the entity dao
 	 */
 	public EntityDao getEntityDao(String codingSchemeUri, String version){
-		return this.doGetDao(codingSchemeUri, version, this.getEntityDaos());
+		return null;//this.doGetDao(codingSchemeUri, version, this.getEntityDaos());
 	}
 	
 	public SearchDao getSearchDao(){
@@ -199,14 +196,6 @@ public class IndexDaoManager {
 
 	public MetaData getMetaData() {
 		return metaData;
-	}
-
-	public IndexRegistry getIndexRegistry() {
-		return indexRegistry;
-	}
-
-	public void setIndexRegistry(IndexRegistry indexRegistry) {
-		this.indexRegistry = indexRegistry;
 	}
 
 	public List<SearchDao> getSearchDaos() {

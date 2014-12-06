@@ -18,24 +18,21 @@
  */
 package org.lexevs.dao.index.access.search;
 
-import java.util.List;
-
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
-import org.lexevs.dao.index.access.LexEvsIndexFormatVersionAwareDao;
+
+import java.util.List;
 
 /**
  * The Interface SearchDao.
  * 
  * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
  */
-public interface SearchDao extends LexEvsIndexFormatVersionAwareDao {
-		
-	public void optimizeIndex();
-	
+public interface SearchDao {
+
 	public String getIndexName(String codingSchemeUri, String version);
 
 	public void deleteDocuments(String codingSchemeUri, String version, Query query);

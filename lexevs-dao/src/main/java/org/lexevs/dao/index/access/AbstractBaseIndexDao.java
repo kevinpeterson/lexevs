@@ -18,16 +18,21 @@
  */
 package org.lexevs.dao.index.access;
 
-import java.util.List;
-
+import org.LexGrid.LexBIG.DataModel.Core.AbsoluteCodingSchemeVersionReference;
+import org.LexGrid.LexBIG.Utility.Constructors;
+import org.lexevs.dao.index.lucenesupport.LuceneIndexTemplate;
 import org.lexevs.dao.index.version.LexEvsIndexFormatVersion;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * The Class AbstractBaseIndexDao.
  * 
  * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
  */
-public abstract class AbstractBaseIndexDao implements LexEvsIndexFormatVersionAwareDao{
+public abstract class AbstractBaseIndexDao implements LexEvsIndexFormatVersionAwareDao {
 
 	/* (non-Javadoc)
 	 * @see org.lexevs.dao.index.access.LexEvsIndexFormatVersionAwareDao#supportsLexEvsIndexFormatVersion(org.lexevs.dao.index.version.LexEvsIndexFormatVersion)
@@ -47,4 +52,16 @@ public abstract class AbstractBaseIndexDao implements LexEvsIndexFormatVersionAw
 	 * @return the list< lex evs index format version>
 	 */
 	public abstract List<LexEvsIndexFormatVersion> doGetSupportedLexEvsIndexFormatVersions();
+
+    public LuceneIndexTemplate getTemplate(String codingSchemeUri, String codingSchemeVersion) {
+        return this.getTemplate(Constructors.createAbsoluteCodingSchemeVersionReference(codingSchemeUri, codingSchemeVersion));
+    }
+
+    public LuceneIndexTemplate getTemplate(AbsoluteCodingSchemeVersionReference codingScheme) {
+        return this.getTemplate(Arrays.asList(codingScheme));
+    }
+
+    public LuceneIndexTemplate getTemplate(Collection<AbsoluteCodingSchemeVersionReference> codingSchemes) {
+        return null;
+    }
 }

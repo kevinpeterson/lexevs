@@ -845,7 +845,7 @@
 		<property name="indexRegistry" ref="indexRegistry"/>
 	</bean>
 	
-	<bean id="luceneSearch2013Dao" class="org.lexevs.dao.index.lucene.v2013.search.LuceneSearchDao">
+	<bean id="luceneSearch2013Dao" class="org.lexevs.dao.index.lucene.search.LuceneSearchDao">
 		<property name="luceneIndexTemplate" ref="luceneSearchIndexTemplate"/>
 	</bean>
 	

@@ -20,11 +20,11 @@ package org.lexevs.dao.index.service.entity;
 
 import org.LexGrid.LexBIG.DataModel.Core.AbsoluteCodingSchemeVersionReference;
 import org.LexGrid.concepts.Entity;
-import org.apache.lucene.document.Document;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.lexevs.dao.index.indexer.IndexCreator.EntityIndexerProgressCallback;
+import org.lexevs.dao.index.model.IndexedEntity;
 
 import java.util.List;
 import java.util.Set;
@@ -53,9 +53,9 @@ public interface EntityIndexService {
 	
 	public void optimizeIndex(String codingSchemeUri, String codingSchemeVersion);
 	
-	public Document getDocumentById(String codingSchemeUri, String codingSchemeVersion, int id);
+	public IndexedEntity getDocumentById(String codingSchemeUri, String codingSchemeVersion, int id);
 	
-	public Document getDocumentById(String codingSchemeUri, String codingSchemeVersion, int id, Set<String> fields);
+	public IndexedEntity getDocumentById(String codingSchemeUri, String codingSchemeVersion, int id, Set<String> fields);
 	
 	public void deleteEntityFromIndex(
 			String codingSchemeUri,
@@ -98,11 +98,6 @@ public interface EntityIndexService {
 	 * @return the match all docs query
 	 */
 	public Query getMatchAllDocsQuery(AbsoluteCodingSchemeVersionReference reference);
-	
-	public Filter getBoundaryDocsHitAsAWholeFilter(
-			String codingSchemeUri, 
-			String version, 
-			Query query);
 
 	public Filter getCodingSchemeFilter(String uri, String internalVersionString);
 

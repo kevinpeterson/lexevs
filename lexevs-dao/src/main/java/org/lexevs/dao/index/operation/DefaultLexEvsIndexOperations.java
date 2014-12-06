@@ -24,7 +24,6 @@ import org.lexevs.dao.index.access.IndexDaoManager;
 import org.lexevs.dao.index.indexer.IndexCreator;
 import org.lexevs.dao.index.indexer.LuceneLoaderCode;
 import org.lexevs.dao.index.indexer.MetaData;
-import org.lexevs.dao.index.indexregistry.IndexRegistry;
 import org.lexevs.logging.AbstractLoggingBean;
 import org.lexevs.system.model.LocalCodingScheme;
 
@@ -35,7 +34,6 @@ import java.util.Map;
 public class DefaultLexEvsIndexOperations extends AbstractLoggingBean implements LexEvsIndexOperations {
 	
 	private IndexCreator indexCreator;
-	private IndexRegistry indexRegistry;
 	private IndexDaoManager indexDaoManager;
 	private MetaData metaData;
 	
@@ -304,10 +302,6 @@ public class DefaultLexEvsIndexOperations extends AbstractLoggingBean implements
 				LuceneLoaderCode.createCodingSchemeUriVersionKey(
 						codingSchemeUri, codingSchemeVersion));
 		
-		indexRegistry.getCommonLuceneIndexTemplate().removeDocuments(term);
-
-		this.indexRegistry.unRegisterCodingSchemeIndex(reference.getCodingSchemeURN(), reference.getCodingSchemeVersion());
-		
 		String key = LocalCodingScheme.getLocalCodingScheme(codingSchemeName, reference.getCodingSchemeVersion()).getKey();
 		try {
 			metaData.removeIndexMetaDataValue(key);
@@ -339,11 +333,4 @@ public class DefaultLexEvsIndexOperations extends AbstractLoggingBean implements
 		return indexCreator;
 	}
 
-	public IndexRegistry getIndexRegistry() {
-		return indexRegistry;
-	}
-
-	public void setIndexRegistry(IndexRegistry indexRegistry) {
-		this.indexRegistry = indexRegistry;
-	}
 }

@@ -18,18 +18,10 @@
  */
 package org.lexevs.dao.index.model;
 
-/**
- * The Interface IndexableResource.
- * 
- * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
- */
-public interface IndexableResource<O> {
-	
-	/**
-	 * Gets the result value.
-	 * 
-	 * @return the result value
-	 */
-	public O getResultValue();
+import org.apache.lucene.document.Document;
+
+public interface Indexable {
+
+	public Document getDocument();
 
 }
