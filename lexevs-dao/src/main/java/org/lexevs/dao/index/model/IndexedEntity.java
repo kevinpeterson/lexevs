@@ -4,13 +4,14 @@ import org.apache.lucene.document.Document;
 
 public class IndexedEntity {
 
-    protected String id;
+    private String entityUuid;
 
-    protected String entityCode;
+    private String codeSystemUri;
+    private String codeSystemVersion;
 
-    protected String entityCodeNamespace;
-
-    protected String entityDescription;
+    private String entityCode;
+    private String entityCodeNamespace;
+    private String entityDescription;
 
     public IndexedEntity() {
         super();
@@ -25,7 +26,51 @@ public class IndexedEntity {
         //TODO
     }
 
-    protected Document toDocument() {
-        return null;
+    public String getEntityUuid() {
+        return entityUuid;
+    }
+
+    public String getCodeSystemUri() {
+        return codeSystemUri;
+    }
+
+    public String getCodeSystemVersion() {
+        return codeSystemVersion;
+    }
+
+    public String getEntityCode() {
+        return entityCode;
+    }
+
+    public String getEntityCodeNamespace() {
+        return entityCodeNamespace;
+    }
+
+    public String getEntityDescription() {
+        return entityDescription;
+    }
+
+    protected void setEntityUuid(String entityUuid) {
+        this.entityUuid = entityUuid;
+    }
+
+    protected void setCodeSystemUri(String codeSystemUri) {
+        this.codeSystemUri = codeSystemUri;
+    }
+
+    protected void setCodeSystemVersion(String codeSystemVersion) {
+        this.codeSystemVersion = codeSystemVersion;
+    }
+
+    protected void setEntityCode(String entityCode) {
+        this.entityCode = entityCode;
+    }
+
+    protected void setEntityCodeNamespace(String entityCodeNamespace) {
+        this.entityCodeNamespace = entityCodeNamespace;
+    }
+
+    protected void setEntityDescription(String entityDescription) {
+        this.entityDescription = entityDescription;
     }
 }

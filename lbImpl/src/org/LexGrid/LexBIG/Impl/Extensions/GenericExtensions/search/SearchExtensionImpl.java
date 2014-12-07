@@ -1,12 +1,5 @@
 package org.LexGrid.LexBIG.Impl.Extensions.GenericExtensions.search;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.LexGrid.LexBIG.DataModel.Core.AbsoluteCodingSchemeVersionReference;
 import org.LexGrid.LexBIG.DataModel.Core.types.CodingSchemeVersionStatus;
 import org.LexGrid.LexBIG.DataModel.InterfaceElements.ExtensionDescription;
@@ -17,27 +10,29 @@ import org.LexGrid.LexBIG.Extensions.Generic.GenericExtension;
 import org.LexGrid.LexBIG.Extensions.Generic.SearchExtension;
 import org.LexGrid.LexBIG.Impl.Extensions.AbstractExtendable;
 import org.LexGrid.LexBIG.Utility.Constructors;
-import org.LexGrid.LexBIG.Utility.ServiceUtility;
 import org.LexGrid.LexBIG.Utility.Iterators.ResolvedConceptReferencesIterator;
+import org.LexGrid.LexBIG.Utility.ServiceUtility;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.queryParser.QueryParser.Operator;
-import org.apache.lucene.analysis.Token;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.BooleanClause.Occur;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.MatchAllDocsQuery;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.*;
 import org.lexevs.dao.index.service.search.SearchIndexService;
 import org.lexevs.locator.LexEvsServiceLocator;
 import org.lexevs.registry.model.RegistryEntry;
 import org.lexevs.registry.service.Registry.ResourceType;
 import org.springframework.util.CollectionUtils;
+
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class SearchExtensionImpl extends AbstractExtendable implements SearchExtension {
 
@@ -186,7 +181,7 @@ public class SearchExtensionImpl extends AbstractExtendable implements SearchExt
     
     protected QueryParser createQueryParser(Analyzer analyzer){
         QueryParser parser = new QueryParser("description", analyzer);
-        parser.setDefaultOperator(Operator.AND);
+        parser.setDefaultOperator(QueryParser.Operator.AND);
         
         return parser;
     }
@@ -209,24 +204,25 @@ public class SearchExtensionImpl extends AbstractExtendable implements SearchExt
         
         return returnSet;
     }
-    
-    public List<String> tokenize(Analyzer analyzer, String field, String keywords) {
-        List<String> result = new ArrayList<String>();
-        TokenStream stream  = analyzer.tokenStream(field, new StringReader(keywords));
 
-        Token token = new Token();
+    /*
+     * thanks to http://stackoverflow.com/questions/6334692/how-to-use-a-lucene-analyzer-to-tokenize-a-string
+     */
+    public static List<String> tokenize(Analyzer analyzer, String field, String text) {
+        List<String> result = new ArrayList<String>();
         try {
-            Token t;
-            while((t = stream.next(token)) != null) {
-                result.add(t.term());
+            TokenStream stream  = analyzer.tokenStream(field, new StringReader(text));
+            stream.reset();
+            while (stream.incrementToken()) {
+                result.add(stream.getAttribute(CharTermAttribute.class).toString());
             }
-        }
-        catch(IOException e) {
-            throw new IllegalStateException(e);
+        } catch (IOException e) {
+            // not thrown b/c we're using a string reader...
+            throw new RuntimeException(e);
         }
 
         return result;
-    }  
+    }
 
     @Override
     protected ExtensionDescription buildExtensionDescription() {

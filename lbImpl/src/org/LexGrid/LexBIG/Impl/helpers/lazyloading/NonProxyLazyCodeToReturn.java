@@ -19,9 +19,9 @@
 package org.LexGrid.LexBIG.Impl.helpers.lazyloading;
 
 import org.LexGrid.util.sql.lgTables.SQLTableConstants;
-import org.apache.lucene.document.Document;
 import org.apache.lucene.search.ScoreDoc;
 import org.lexevs.dao.index.indexer.LuceneLoaderCode;
+import org.lexevs.dao.index.model.IndexedEntity;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -68,7 +68,7 @@ public class NonProxyLazyCodeToReturn extends AbstractNonProxyLazyCodeToReturn {
     }
 
     @Override
-    protected Document buildDocument() throws Exception {
+    protected IndexedEntity buildDocument() throws Exception {
         String uri = this.getSystemResourceService().getUriForUserCodingSchemeName(internalCodeSystemName, internalVersionString);
         return 
             this.getEntityIndexService().getDocumentById(uri, internalVersionString, this.getDocumentId(), this.doGetFieldSelector());

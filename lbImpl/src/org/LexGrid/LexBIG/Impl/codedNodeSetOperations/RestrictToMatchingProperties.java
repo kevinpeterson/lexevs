@@ -33,12 +33,8 @@ import org.LexGrid.naming.SupportedLanguage;
 import org.LexGrid.naming.SupportedProperty;
 import org.LexGrid.util.sql.lgTables.SQLTableConstants;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.*;
 import org.apache.lucene.search.BooleanClause.Occur;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.regex.RegexQuery;
 import org.lexevs.locator.LexEvsServiceLocator;
 
 import java.util.ArrayList;
@@ -73,7 +69,7 @@ public class RestrictToMatchingProperties extends RestrictToProperties implement
         // Until the RegexQuery is completely serializable this cannot be done
         // until the code is on the client side
         for (int i = 0; i < queryTerms_.size(); i++) {
-            textQuery_.add(new BooleanClause(new RegexQuery(queryTerms_.get(i)), Occur.MUST));
+            textQuery_.add(new BooleanClause(new RegexpQuery(queryTerms_.get(i)), Occur.MUST));
         }
         return textQuery_;
     }

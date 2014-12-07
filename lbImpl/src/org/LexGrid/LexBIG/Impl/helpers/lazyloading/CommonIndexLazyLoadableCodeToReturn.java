@@ -23,6 +23,7 @@ import java.util.List;
 import org.LexGrid.LexBIG.DataModel.Core.AbsoluteCodingSchemeVersionReference;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.search.ScoreDoc;
+import org.lexevs.dao.index.model.IndexedEntity;
 
 /**
  * The Class LazyLoadableCodeToReturn.
@@ -65,7 +66,7 @@ public class CommonIndexLazyLoadableCodeToReturn extends AbstractNonProxyLazyCod
         this.references = references;
     }
     
-    protected Document buildDocument() throws Exception {
+    protected IndexedEntity buildDocument() throws Exception {
         return null;// TOOD: getEntityIndexService().getDocumentById(this.references, this.getDocumentId());
     }
 }

@@ -22,9 +22,8 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import org.apache.lucene.document.StringField;
+import org.apache.lucene.document.TextField;
 
 /**
  * This class assists in building 'proper' documents for the index.
@@ -45,6 +44,9 @@ public class DocumentFromStringsGenerator {
         document_ = new Document();
         document_.add(new Field(UNIQUE_DOCUMENT_IDENTIFIER_FIELD,
                 documentIdentifier, Store.YES, Index.NOT_ANALYZED));
+
+
+        LuceneDocumentBuilder builder = new LuceneDocumentBuilder();
     }
 
     public Document getDocument() {
@@ -82,6 +84,10 @@ public class DocumentFromStringsGenerator {
         } else {
             indexC = Index.NO;
         }
+
+        StringField field = new StringField("asdf", "asdf", Store.YES);
+
+        TextField f = new TextField("asdf", "asdf", Store.YES);
 
         document_.add(new Field(name, value, storeC, indexC));
     }

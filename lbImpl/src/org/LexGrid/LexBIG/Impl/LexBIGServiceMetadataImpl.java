@@ -18,8 +18,6 @@
  */
 package org.LexGrid.LexBIG.Impl;
 
-import java.util.ArrayList;
-
 import org.LexGrid.LexBIG.DataModel.Collections.AbsoluteCodingSchemeVersionReferenceList;
 import org.LexGrid.LexBIG.DataModel.Collections.MetadataPropertyList;
 import org.LexGrid.LexBIG.DataModel.Core.AbsoluteCodingSchemeVersionReference;
@@ -29,12 +27,14 @@ import org.LexGrid.LexBIG.Impl.dataAccess.MetaDataQuery;
 import org.LexGrid.LexBIG.LexBIGService.LexBIGServiceMetadata;
 import org.LexGrid.LexBIG.Utility.logging.LgLoggerIF;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.BooleanClause.Occur;
-import org.apache.lucene.search.regex.RegexQuery;
+import org.apache.lucene.search.RegexpQuery;
 import org.lexevs.locator.LexEvsServiceLocator;
 import org.lexevs.logging.LoggerFactory;
+
+import java.util.ArrayList;
 
 /**
  * Lucene implementation of the LexBIGServiceMetadata interface.
@@ -121,7 +121,7 @@ public class LexBIGServiceMetadataImpl implements LexBIGServiceMetadata {
                 masterQuery.add(queryClauses.get(i), Occur.MUST);
             }
             for (int i = 0; i < termClauses.size(); i++) {
-                masterQuery.add(new RegexQuery(termClauses.get(i)), Occur.MUST);
+                masterQuery.add(new RegexpQuery(termClauses.get(i)), Occur.MUST);
             }
 
             return LexEvsServiceLocator.getInstance().

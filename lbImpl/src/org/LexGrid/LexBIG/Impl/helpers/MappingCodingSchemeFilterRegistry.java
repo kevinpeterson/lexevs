@@ -18,11 +18,6 @@
  */
 package org.LexGrid.LexBIG.Impl.helpers;
 
-import java.io.IOException;
-import java.util.BitSet;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.LexGrid.LexBIG.DataModel.Collections.ConceptReferenceList;
 import org.LexGrid.LexBIG.DataModel.Core.AbsoluteCodingSchemeVersionReference;
 import org.LexGrid.LexBIG.DataModel.Core.ConceptReference;
@@ -34,17 +29,25 @@ import org.LexGrid.LexBIG.Utility.ServiceUtility;
 import org.LexGrid.codingSchemes.CodingScheme;
 import org.LexGrid.relations.Relations;
 import org.LexGrid.util.sql.lgTables.SQLTableConstants;
-import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.index.Terms;
+import org.apache.lucene.queries.TermsFilter;
 import org.apache.lucene.search.CachingWrapperFilter;
 import org.apache.lucene.search.DocIdSet;
 import org.apache.lucene.search.Filter;
-import org.apache.lucene.search.TermsFilter;
+import org.apache.lucene.util.Bits;
 import org.lexevs.dao.database.access.association.model.Triple;
 import org.lexevs.dao.database.operation.transitivity.DefaultTransitivityBuilder.TripleIterator;
 import org.lexevs.dao.database.service.DatabaseServiceManager;
 import org.lexevs.locator.LexEvsServiceLocator;
 import org.lexevs.logging.LoggerFactory;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * The Class CodeListFilterRegistry.
@@ -151,15 +154,17 @@ public class MappingCodingSchemeFilterRegistry {
         LoggerFactory.getLogger().info("Building mapping filter for URI: " + uri + "Version: " + version);
 
         String codeField = SQLTableConstants.TBLCOL_ENTITYCODE;
-        
-        TermsFilter filter = new TermsFilter();
-        
+
         ConceptReferenceList codeList = this.buildConceptReferenceList(uri, version);
-        
+
+        List<Term> terms = new ArrayList<Term>();
+
         for(ConceptReference ref : codeList.getConceptReference()){
-            filter.addTerm(new Term(codeField, ref.getCode()));
+            terms.add(new Term(codeField, ref.getCode()));
         }
-        
+
+        TermsFilter filter = new TermsFilter(terms);
+
         LoggerFactory.getLogger().info("Finished building mapping filter for URI: " + uri + "Version: " + version);
         
         return decorateFilter(filter);
@@ -206,20 +211,11 @@ public class MappingCodingSchemeFilterRegistry {
             this.version = version;
         }
 
-        @SuppressWarnings("deprecation")
         @Override
-        public BitSet bits(IndexReader reader) throws IOException {
-            return 
-                MappingCodingSchemeFilterRegistry.defaultInstance().
-                    getMappingCodingSchemeFilter(uri, version, false).bits(reader);
+        public DocIdSet getDocIdSet(AtomicReaderContext atomicReaderContext, Bits bits) throws IOException {
+            return MappingCodingSchemeFilterRegistry.defaultInstance().
+                            getMappingCodingSchemeFilter(uri, version, false).getDocIdSet(atomicReaderContext, bits);
         }
-
-        @Override
-        public DocIdSet getDocIdSet(IndexReader reader) throws IOException {
-            return 
-                MappingCodingSchemeFilterRegistry.defaultInstance().
-                    getMappingCodingSchemeFilter(uri, version, false).getDocIdSet(reader);
-        } 
     }
     
     private ConceptReferenceList tripleToConceptReferenceList(Triple triple) {

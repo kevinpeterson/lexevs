@@ -18,16 +18,6 @@
  */
 package org.lexevs.registry.service;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.List;
-
-import javax.sql.DataSource;
-
 import org.LexGrid.LexBIG.DataModel.Core.AbsoluteCodingSchemeVersionReference;
 import org.LexGrid.LexBIG.DataModel.Core.types.CodingSchemeVersionStatus;
 import org.LexGrid.LexBIG.Exceptions.LBException;
@@ -51,6 +41,15 @@ import org.lexevs.registry.model.RegistryEntry;
 import org.lexevs.system.ResourceManager;
 import org.lexevs.system.constants.SystemVariables;
 
+import javax.sql.DataSource;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Hashtable;
+import java.util.List;
+
 /**
  * This class stores and provides access to information about loaded and tagged
  * terminologies.
@@ -65,6 +64,7 @@ import org.lexevs.system.constants.SystemVariables;
  * @author <A HREF="mailto:erdmann.jesse@mayo.edu">Jesse Erdmann</A>
  * @version subversion $Revision: $ checked in on $Date: $
  */
+@Deprecated
 public class XmlRegistry implements Registry {
     
     /** The last update time_. */

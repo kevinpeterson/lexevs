@@ -163,115 +163,7 @@ You may obtain a copy of the License at
 			<fileset dir="${pkg-extlib}" id="extLib">
 				<include name="**/*.jar"/>
 			</fileset>
-			
-			<!-- We should be able to use IVY for these
-			<fileset dir="${icu4j.libs.dir}" id="icu4j">
-				<include name="*"/>
-			</fileset>
-			<fileset dir="${jdom.libs.dir}" id="jdom">
-				<include name="*"/>
-			</fileset>
-			<fileset dir="${jena.libs.dir}" id="jena">
-				<include name="*.jar"/>
-			</fileset>			
-			<fileset dir="${prefuse.libs.dir}" id="prefuse">
-				<include name="*.jar"/>
-			</fileset>
-			<fileset dir="${castor.libs.dir}" id="castor">
-				<include name="castor-1.3.1.jar"/>
-				<include name="castor-1.3.1-core.jar"/>
-			</fileset>			
-			
-			<fileset dir="${junit.libs.dir}" id="junit">
-				<include name="junit-4.4.jar"/>
-			</fileset>
-			<fileset dir="${groboutils.libs.dir}" id="groboutils">
-				<include name="GroboUtils-5-core.jar"/>
-			</fileset>
-			<fileset dir="${asm.libs.dir}" id="asm">
-				<include name="*.jar"/>
-			</fileset>
-			<fileset dir="${cglib.libs.dir}" id="cglib">
-				<include name="*.jar"/>
-				<include name="*.txt"/>
-			</fileset>
-			<fileset dir="${easymock.libs.dir}" id="easymock">
-				<include name="*.jar"/>
-				<include name="*.txt"/>
-			</fileset>
-			<fileset dir="${spring.libs.dir}" id="spring">
-				<include name="*.jar"/>
-				<include name="*.txt"/>
-			</fileset>
-						
-			<fileset dir="${c3p0.libs.dir}" id="c3p0">
-				<include name="*"/>
-			</fileset>				
-			<fileset dir="${args4j.libs.dir}" id="args4j">
-				<include name="*"/>
-			</fileset>					
-			<fileset dir="${dom4j.libs.dir}" id="dom4j">
-				<include name="*"/>
-			</fileset>						
-			<fileset dir="${ehcache.libs.dir}" id="ehcache">
-				<include name="*"/>
-			</fileset>					
-			<fileset dir="${hibernate.libs.dir}" id="hibernate">
-				<include name="*"/>
-			</fileset>					
-			<fileset dir="${javax.libs.dir}" id="javax">
-				<include name="*"/>
-			</fileset>						
-			<fileset dir="${jettison.libs.dir}" id="jettison">
-				<include name="*"/>
-			</fileset>					
-			<fileset dir="${jta.libs.dir}" id="jta">
-				<include name="*"/>
-			</fileset>					
-			<fileset dir="${slf4j.libs.dir}" id="slf4j">
-				<include name="*"/>
-			</fileset>						
-			<fileset dir="${xstream.libs.dir}" id="xstream">
-				<include name="*"/>
-			</fileset>	
-			<fileset dir="${javassist.libs.dir}" id="javassist">
-				<include name="*"/>
-			</fileset>	
-			<fileset dir="${apache.libs.dir}" id="jakarta-apache">
-				<include name="commons/**/*.jar"/>
-				<include name="commons/**/*.license.txt"/>
-				<include name="xerces/**/*.jar"/>
-				<include name="xerces/**/*.license.txt"/>
-				<include name="lucene/**/*.jar"/>
-				<include name="lucene/**/*.license.txt"/>
-				<include name="log4j/**/*.jar"/>
-				<include name="log4j/**/*.license.txt"/>
-			</fileset>
-			<fileset dir="${eclipse.core.libs.dir}" id="core.eclipse.support">
-				<include name="org.eclipse.core.runtime_3.2.0.v20060603.jar"/>
-				<include name="org.eclipse.equinox.common_3.2.0.v20060603.jar"/>
-				<include name="org.eclipse.equinox.preferences_3.2.0.v20060601.jar"/>
-				<include name="org.eclipse.osgi_3.2.0.v20060601.jar"/>
-			</fileset>
-			<fileset dir="${eclipse.emf.libs.dir}" id="emf.eclipse.support">
-				<include name="org.eclipse.emf.common_2.2.1.v200609210005.jar"/>
-				<include name="org.eclipse.emf.ecore_2.2.1.v200609210005.jar"/>
-				<include name="org.eclipse.emf.ecore.xmi_2.2.1.v200609210005.jar"/>
-			</fileset>
-			<fileset dir="${protege.libs.dir}" id="protege">
-				<include name="protege-3.4.4.jar"/>
-				<include name="protege-owl-3.4.4.jar"/>
-				<include name="looks-2.1.3.jar"/>
-				<include name="orphanNodesAlg.jar"/>
-			</fileset>
-			
-			<fileset dir="${data.libs.dir}" id="data">
-				<include name="BlankAccessDB.jar"/>
-			</fileset>
-			<fileset dir="${claml.libs.dir}" id="claml">
-				<include name="*"/>
-			</fileset>
-			-->
+
 		</path>
 		
 		<path id="master.classpath">
@@ -298,10 +190,7 @@ You may obtain a copy of the License at
 				<include name="restricted-license/mysql-connector-java-5.1.6-bin.jar"/>
 			</fileset>
 		</path>
-		
-		
-		
-		
+
 	</target>
 	
 	<target name="init-bda">
@@ -446,14 +335,7 @@ You may obtain a copy of the License at
 			<param name="module" value="lexgrid-model"/>
   		</antcall>
 	</target>
-		
-	<target name="Indexer"   description="packages Indexer classes">
-		<antcall target="common-project-build">
-   			<param name="project" value="Indexer"/>
-			<param name="module" value="indexer"/>
-  		</antcall>
-	</target>
-	
+
 	<target name="lgResourceReader"  depends="lgUtility" description="packages lgResourceReader classes">	
 		<antcall target="common-project-build">
    			<param name="project" value="lgResourceReader"/>
@@ -503,7 +385,7 @@ You may obtain a copy of the License at
   		</antcall>
 	</target>
 	
-	<target name="lgConverter" depends="lgUtility, Indexer, lgResourceReader"  description="packages LexGrid Converter classes">
+	<target name="lgConverter" depends="lgUtility, lgResourceReader"  description="packages LexGrid Converter classes">
 		<antcall target="common-project-build">
    			<param name="project" value="lgConverter"/>
 			<param name="module" value="lexgrid-converter"/>
@@ -517,7 +399,7 @@ You may obtain a copy of the License at
   		</antcall>
 	</target>
 	
-	<target name="lexevs-dao" depends="lgModel,lbModel,Indexer,lgUtility" description="packages the LexEVS DAO">
+	<target name="lexevs-dao" depends="lgModel,lbModel,lgUtility" description="packages the LexEVS DAO">
 		<antcall target="common-project-build">
    			<param name="project" value="lexevs-dao"/>
 			<param name="module" value="lexevs-dao"/>
@@ -750,7 +632,7 @@ pause
 	<!--Construct the runtime.jar, merging it's manifests together at the same time-->
 	<target name="lexbig.jar" depends="lbModel, lbInterfaces, 
 		lexevs-dao, lgConverter, lexrdf, lbImpl, lbAdmin, 
-		Indexer, lgResourceReader, lgValueSets,lbExamples,
+		lgResourceReader, lgValueSets,lbExamples,
 		loader-framework-core, abstract-rrf-loader, 
 		umls-loader, meta-loader, rxnorm-loader, lbGUI, lbTest">
 		<jar jarfile="${pkg-components}/lexbig.jar" filesetmanifest="merge" duplicate="preserve">
@@ -836,7 +718,7 @@ pause
 		lgModel, lgUtility,
 		lgResourceReader,
 		lbModel, lbInterfaces, lbImpl, lbAdmin,
-		lbExamples, lbGUI, lbTest, Indexer, lgConverter,
+		lbExamples, lbGUI, lbTest, lgConverter,
 		lexbig.jar" >
 		<delete dir="${basedir}/../lbPackager/junit-results" />
 		<mkdir dir="${basedir}/../lbPackager/junit-results" />

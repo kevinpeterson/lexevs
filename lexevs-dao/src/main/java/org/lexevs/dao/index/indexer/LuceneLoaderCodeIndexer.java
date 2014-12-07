@@ -28,7 +28,6 @@ import org.apache.lucene.document.Document;
 import org.lexevs.dao.database.ibatis.entity.model.IdableEntity;
 import org.lexevs.dao.database.utility.DaoUtility;
 import org.lexevs.dao.index.access.entity.EntityDao;
-import org.lexevs.dao.index.version.LexEvsIndexFormatVersion;
 import org.lexevs.system.constants.SystemVariables;
 import org.lexevs.system.service.SystemResourceService;
 
@@ -40,7 +39,7 @@ import java.util.List;
  * 
  * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
  */
-public class LuceneLoaderCodeIndexer extends LuceneLoaderCode implements EntityIndexer {
+public class LuceneLoaderCodeIndexer extends LuceneLoaderCode {
 
 	/** The system resource service. */
 	private SystemResourceService systemResourceService;
@@ -283,8 +282,4 @@ public class LuceneLoaderCodeIndexer extends LuceneLoaderCode implements EntityI
 		return currentIndexVersion;
 	}
 
-	@Override
-	public LexEvsIndexFormatVersion getIndexerFormatVersion() {
-		return LexEvsIndexFormatVersion.parseStringToVersion(this.getCurrentIndexVersion());
-	}
 }

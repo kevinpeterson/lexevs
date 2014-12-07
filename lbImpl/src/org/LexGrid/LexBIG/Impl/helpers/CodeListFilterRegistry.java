@@ -18,16 +18,18 @@
  */
 package org.LexGrid.LexBIG.Impl.helpers;
 
-import java.util.Map;
-
 import org.LexGrid.LexBIG.DataModel.Collections.ConceptReferenceList;
 import org.LexGrid.LexBIG.DataModel.Core.ConceptReference;
 import org.LexGrid.util.sql.lgTables.SQLTableConstants;
 import org.apache.commons.collections.map.LRUMap;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.queries.TermsFilter;
 import org.apache.lucene.search.CachingWrapperFilter;
 import org.apache.lucene.search.Filter;
-import org.apache.lucene.search.TermsFilter;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * The Class CodeListFilterRegistry.
@@ -75,13 +77,15 @@ public class CodeListFilterRegistry {
             int key = this.getKey(uri, version, list);
             if(!filterMap.containsKey(key)) {
                 String codeField = SQLTableConstants.TBLCOL_ENTITYCODE;
-                
-                TermsFilter filter = new TermsFilter();
-               
+
+                List<Term> terms = new ArrayList<Term>();
+
                 for(ConceptReference ref : list.getConceptReference()){
-                    filter.addTerm(new Term(codeField, ref.getCode()));
+                    terms.add(new Term(codeField, ref.getCode()));
                 }
-                
+
+                TermsFilter filter = new TermsFilter(terms);
+
                 this.filterMap.put(key, new CachingWrapperFilter(filter));
             }
             

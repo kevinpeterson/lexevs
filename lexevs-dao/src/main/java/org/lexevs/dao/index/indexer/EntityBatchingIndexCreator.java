@@ -27,8 +27,8 @@ import org.lexevs.dao.index.access.IndexDaoManager;
 import org.lexevs.dao.index.access.entity.EntityDao;
 import org.lexevs.dao.index.factory.IndexLocationFactory;
 import org.lexevs.dao.index.model.IndexableEntity;
-import org.lexevs.dao.index.model.IndexableProperty;
 import org.lexevs.dao.index.model.IndexedEntity;
+import org.lexevs.dao.index.model.IndexedProperty;
 import org.lexevs.system.constants.SystemVariables;
 import org.lexevs.system.service.SystemResourceService;
 
@@ -63,7 +63,7 @@ public class EntityBatchingIndexCreator implements IndexCreator {
 	
 	private Indexer<IndexedEntity> entityIndexer;
 
-    private Indexer<IndexableProperty> propertyIndexer;
+    private Indexer<IndexedProperty> propertyIndexer;
 	
 	//private EntityIndexer searchIndexer;
 	

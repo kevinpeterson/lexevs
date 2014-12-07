@@ -16,15 +16,17 @@
  * 		http://www.eclipse.org/legal/epl-v10.html
  * 
  */
-package org.LexGrid.LexBIG.Impl.helpers.lazyloading;
+package org.lexevs.dao.index.indexer;
 
-import junit.framework.TestCase;
+import org.apache.lucene.document.Document;
+import org.lexevs.dao.index.model.IndexedProperty;
 
-/**
- * The Class LazyLoadableCodeToReturnTest.
- */
-public class LazyLoadableCodeToReturnTest extends TestCase {
+public class PropertyIndexer implements Indexer<IndexedProperty> {
 
-//TODO:
+    @Override
+    public Document index(IndexedProperty indexable) {
+        LuceneDocumentBuilder builder = new LuceneDocumentBuilder();
 
+        return null;//builder.withField("", 1, false).build();
+    }
 }

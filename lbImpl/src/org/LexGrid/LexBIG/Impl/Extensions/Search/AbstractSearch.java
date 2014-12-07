@@ -24,7 +24,7 @@ import org.LexGrid.LexBIG.Extensions.ExtensionRegistry;
 import org.LexGrid.LexBIG.Extensions.Query.Search;
 import org.LexGrid.LexBIG.Impl.Extensions.AbstractExtendable;
 import org.LexGrid.LexBIG.Impl.dataAccess.IndexQueryParserFactory;
-import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.springframework.util.StringUtils;
 
 import java.util.Set;

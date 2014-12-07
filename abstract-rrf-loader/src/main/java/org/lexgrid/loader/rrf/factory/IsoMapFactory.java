@@ -18,17 +18,18 @@
  */
 package org.lexgrid.loader.rrf.factory;
 
-import java.io.File;
-import java.util.Map;
-import java.util.Properties;
-
 import org.lexevs.locator.LexEvsServiceLocator;
 import org.lexgrid.loader.logging.LoggingBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
-import edu.mayo.informatics.lexgrid.convert.directConversions.UmlsCommon.UMLSBaseCode;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStreamReader;
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * A factory for creating IsoMap objects.
@@ -50,7 +51,7 @@ public class IsoMapFactory extends LoggingBean implements FactoryBean {
 	@SuppressWarnings("unchecked")
 	@Override
 	public Object getObject() throws Exception {
-		Map<String,String> isoMap = UMLSBaseCode.getIsoMap();
+		Map<String,String> isoMap = getIsoMap();
 		
 		String path = this.getPath();
 		
@@ -104,6 +105,29 @@ public class IsoMapFactory extends LoggingBean implements FactoryBean {
 		
 		return configPath.substring(0, configPath.lastIndexOf(File.separator) + 1) + ISO_MAP_FILE_NAME;
 	}
+
+    public Hashtable getIsoMap() throws Exception {
+        String fileName = "/" + ISO_MAP_FILE_NAME;
+        Hashtable result = new Hashtable();
+        BufferedReader in;
+        int lineNo = 1;
+        in = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream(fileName)));
+        String line = in.readLine();
+        while (line != null) {
+            if (!line.startsWith("#") && line.length() > 0) {
+                String[] foo = line.split("=");
+                if (foo.length == 2) {
+                    result.put(foo[0], foo[1]);
+                } else {
+                    throw new Exception("Invalid format on line " + lineNo);
+                }
+            }
+            line = in.readLine();
+            lineNo++;
+        }
+        in.close();
+        return result;
+    }
 
 	/* (non-Javadoc)
 	 * @see org.springframework.beans.factory.FactoryBean#getObjectType()

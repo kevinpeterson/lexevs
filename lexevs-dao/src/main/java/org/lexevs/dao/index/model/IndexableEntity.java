@@ -14,7 +14,7 @@ public class IndexableEntity extends IndexedEntity implements BlockIndexable {
 
     private List<IndexableProperty> properties = new ArrayList<IndexableProperty>();
 
-    public IndexableEntity(Entity entity, Indexer<IndexedEntity> entityIndexer, Indexer<IndexableProperty> propertyIndexer) {
+    public IndexableEntity(Entity entity, Indexer<IndexedEntity> entityIndexer, Indexer<IndexedProperty> propertyIndexer) {
         super();
         this.entityIndexer = entityIndexer;
 

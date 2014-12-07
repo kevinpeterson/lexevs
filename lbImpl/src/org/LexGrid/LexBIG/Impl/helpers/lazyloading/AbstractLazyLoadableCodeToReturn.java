@@ -23,6 +23,7 @@ import org.LexGrid.util.sql.lgTables.SQLTableConstants;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.search.ScoreDoc;
 import org.lexevs.dao.index.indexer.LuceneLoaderCode;
+import org.lexevs.dao.index.model.IndexedEntity;
 import org.lexevs.dao.index.service.entity.EntityIndexService;
 import org.lexevs.locator.LexEvsServiceLocator;
 import org.lexevs.system.service.SystemResourceService;
@@ -98,36 +99,35 @@ public abstract class AbstractLazyLoadableCodeToReturn extends CodeToReturn {
      * @throws Exception the exception
      */
     public void hydrate() throws Exception{
-         
-        Document doc = buildDocument();
- 
-        String codeField = SQLTableConstants.TBLCOL_ENTITYCODE;
+        IndexedEntity doc = buildDocument();
+
+        this.setCode(doc.getEntityCode());
         
-        this.setCode(doc.get(codeField));
-        
-        this.setEntityUid(doc.get(LuceneLoaderCode.ENTITY_UID_FIELD));
+        this.setEntityUid(doc.getEntityUuid());
         
         this.setEntityDescription(
-                doc.get(SQLTableConstants.TBLCOL_ENTITYDESCRIPTION));
+                doc.getEntityDescription());
         
         if(super.getUri() == null) {
             this.setUri(
-                doc.get(LuceneLoaderCode.CODING_SCHEME_ID_FIELD));
+                doc.getCodeSystemUri());
         }
         
         if(super.getVersion() == null) {
             this.setVersion(
-                doc.get(LuceneLoaderCode.CODING_SCHEME_VERSION_FIELD));
+                doc.getCodeSystemVersion());
         }
         
         this.setNamespace(
-                doc.get(SQLTableConstants.TBLCOL_ENTITYCODENAMESPACE));
-        this.setEntityTypes(
-                doc.getValues("entityType"));
+                doc.getEntityCodeNamespace());
+
+        //TODO:
+        //this.setEntityTypes(
+        //        doc.getValues("entityType"));
         isHydrated = true;       
     }
     
-    protected abstract Document buildDocument() throws Exception;
+    protected abstract IndexedEntity buildDocument() throws Exception;
     
     protected EntityIndexService getEntityIndexService() {
         if(this.entityIndexService == null) {

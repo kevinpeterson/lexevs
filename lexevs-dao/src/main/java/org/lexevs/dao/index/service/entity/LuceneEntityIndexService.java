@@ -30,8 +30,8 @@ import org.lexevs.dao.index.access.IndexDaoManager;
 import org.lexevs.dao.index.indexer.*;
 import org.lexevs.dao.index.indexer.IndexCreator.EntityIndexerProgressCallback;
 import org.lexevs.dao.index.model.IndexableEntity;
-import org.lexevs.dao.index.model.IndexableProperty;
 import org.lexevs.dao.index.model.IndexedEntity;
+import org.lexevs.dao.index.model.IndexedProperty;
 import org.lexevs.registry.service.Registry;
 import org.lexevs.system.model.LocalCodingScheme;
 import org.lexevs.system.service.SystemResourceService;
@@ -55,7 +55,7 @@ public class LuceneEntityIndexService implements EntityIndexService {
 
     private Indexer<IndexedEntity> entityIndexer;
 
-    private Indexer<IndexableProperty> propertyIndexer;
+    private Indexer<IndexedProperty> propertyIndexer;
 	
 	private SystemResourceService systemResourceService;
 	
