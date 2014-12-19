@@ -26,12 +26,15 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
+import org.lexevs.dao.database.ibatis.entity.model.IdableEntity;
 import org.lexevs.dao.index.access.IndexDaoManager;
-import org.lexevs.dao.index.indexer.*;
+import org.lexevs.dao.index.indexer.IndexCreator;
 import org.lexevs.dao.index.indexer.IndexCreator.EntityIndexerProgressCallback;
+import org.lexevs.dao.index.indexer.Indexer;
+import org.lexevs.dao.index.indexer.LuceneLoaderCode;
+import org.lexevs.dao.index.indexer.MetaData;
 import org.lexevs.dao.index.model.IndexableEntity;
 import org.lexevs.dao.index.model.IndexedEntity;
-import org.lexevs.dao.index.model.IndexedProperty;
 import org.lexevs.registry.service.Registry;
 import org.lexevs.system.model.LocalCodingScheme;
 import org.lexevs.system.service.SystemResourceService;
@@ -53,9 +56,7 @@ public class LuceneEntityIndexService implements EntityIndexService {
 	/** The index creator. */
 	private IndexCreator indexCreator;
 
-    private Indexer<IndexedEntity> entityIndexer;
-
-    private Indexer<IndexedProperty> propertyIndexer;
+    private Indexer<IndexableEntity> entityIndexer;
 	
 	private SystemResourceService systemResourceService;
 	
@@ -131,8 +132,7 @@ public class LuceneEntityIndexService implements EntityIndexService {
 	@Override
 	public void addEntityToIndex(String codingSchemeUri,
 			String codingSchemeVersion, Entity entity) {
-
-		IndexableEntity indexableEntity = new IndexableEntity(entity, this.entityIndexer, this.propertyIndexer);
+		IndexableEntity indexableEntity = new IndexableEntity((IdableEntity)entity, codingSchemeUri, codingSchemeVersion);
 		
 		indexDaoManager.getEntityDao(codingSchemeUri, codingSchemeVersion).
 			addDocuments(codingSchemeUri, codingSchemeVersion, Arrays.asList(indexableEntity), null);
@@ -282,10 +282,6 @@ public class LuceneEntityIndexService implements EntityIndexService {
 
 	public MetaData getMetaData() {
 		return metaData;
-	}
-
-	public void setEntityIndexer(EntityIndexer entityIndexer) {
-		this.entityIndexer = entityIndexer;
 	}
 
 	public Registry getRegistry() {

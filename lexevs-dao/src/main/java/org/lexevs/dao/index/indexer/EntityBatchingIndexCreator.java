@@ -22,19 +22,16 @@ import org.LexGrid.LexBIG.DataModel.Core.AbsoluteCodingSchemeVersionReference;
 import org.LexGrid.LexBIG.Utility.logging.LgLoggerIF;
 import org.LexGrid.concepts.Entity;
 import org.apache.lucene.analysis.Analyzer;
+import org.lexevs.dao.database.ibatis.entity.model.IdableEntity;
 import org.lexevs.dao.database.service.entity.EntityService;
 import org.lexevs.dao.index.access.IndexDaoManager;
 import org.lexevs.dao.index.access.entity.EntityDao;
-import org.lexevs.dao.index.factory.IndexLocationFactory;
 import org.lexevs.dao.index.model.IndexableEntity;
-import org.lexevs.dao.index.model.IndexedEntity;
-import org.lexevs.dao.index.model.IndexedProperty;
 import org.lexevs.system.constants.SystemVariables;
 import org.lexevs.system.service.SystemResourceService;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * The Class EntityBatchingIndexCreator.
@@ -60,13 +57,7 @@ public class EntityBatchingIndexCreator implements IndexCreator {
 	private MetaData metaData;
 
 	private Analyzer analyzer = LuceneLoaderCode.getAnaylzer();
-	
-	private Indexer<IndexedEntity> entityIndexer;
 
-    private Indexer<IndexedProperty> propertyIndexer;
-	
-	//private EntityIndexer searchIndexer;
-	
 	private LgLoggerIF logger;
 	
 	@Override
@@ -121,7 +112,7 @@ public class EntityBatchingIndexCreator implements IndexCreator {
 				List<IndexableEntity> blockIndexables = new ArrayList<IndexableEntity>();
 
 				for(Entity entity : entities) {
-                    blockIndexables.add(new IndexableEntity(entity, this.entityIndexer, this.propertyIndexer));
+                    blockIndexables.add(new IndexableEntity((IdableEntity)entity, reference.getCodingSchemeURN(), reference.getCodingSchemeVersion()));
 					totalIndexedEntities++;
 
 					if(callback != null) {
@@ -186,11 +177,8 @@ public class EntityBatchingIndexCreator implements IndexCreator {
 	}
 	
 	protected String getIndexName(AbsoluteCodingSchemeVersionReference reference) {
-		if(systemVariables.getIsSingleIndex()){
-			return IndexLocationFactory.DEFAULT_SINGLE_INDEX_NAME;
-		} else {
-			return UUID.randomUUID().toString();
-		}
+		//TODO:
+        return null;
 	}
 	
 	protected String getSearchIndexName() {
@@ -285,10 +273,6 @@ public class EntityBatchingIndexCreator implements IndexCreator {
 
 	public LgLoggerIF getLogger() {
 		return logger;
-	}
-
-	public void setEntityIndexer(EntityIndexer entityIndexer) {
-		this.entityIndexer = entityIndexer;
 	}
 
 	public void setMetaData(MetaData metaData) {

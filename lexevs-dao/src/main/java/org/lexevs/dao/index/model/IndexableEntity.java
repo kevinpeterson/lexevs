@@ -1,38 +1,28 @@
 package org.lexevs.dao.index.model;
 
-import org.LexGrid.commonTypes.Property;
-import org.LexGrid.concepts.Entity;
-import org.apache.lucene.document.Document;
-import org.lexevs.dao.index.indexer.Indexer;
+import org.lexevs.dao.database.ibatis.entity.model.IdableEntity;
 
-import java.util.ArrayList;
-import java.util.List;
+public class IndexableEntity {
 
-public class IndexableEntity extends IndexedEntity implements BlockIndexable {
+    private String codingSchemeUri;
+    private String codingSchemeVersion;
+    private IdableEntity entity;
 
-    private Indexer<IndexedEntity> entityIndexer;
-
-    private List<IndexableProperty> properties = new ArrayList<IndexableProperty>();
-
-    public IndexableEntity(Entity entity, Indexer<IndexedEntity> entityIndexer, Indexer<IndexedProperty> propertyIndexer) {
-        super();
-        this.entityIndexer = entityIndexer;
-
-        for(Property property : entity.getAllProperties()) {
-            this.properties.add(new IndexableProperty(property, propertyIndexer));
-        }
+    public IndexableEntity(IdableEntity entity, String codingSchemeVersion, String codingSchemeUri) {
+        this.entity = entity;
+        this.codingSchemeVersion = codingSchemeVersion;
+        this.codingSchemeUri = codingSchemeUri;
     }
 
-    @Override
-    public List<Document> getDocuments() {
-        List<Document> documents = new ArrayList<Document>();
+    public String getCodingSchemeUri() {
+        return codingSchemeUri;
+    }
 
-        for(IndexableProperty property : this.properties) {
-            documents.add(property.getDocument());
-        }
+    public String getCodingSchemeVersion() {
+        return codingSchemeVersion;
+    }
 
-        documents.add(this.entityIndexer.index(this));
-
-        return documents;
+    public IdableEntity getEntity() {
+        return entity;
     }
 }

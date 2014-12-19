@@ -20,10 +20,9 @@ package org.lexevs.dao.index.access;
 
 import org.LexGrid.LexBIG.DataModel.Core.AbsoluteCodingSchemeVersionReference;
 import org.LexGrid.LexBIG.Utility.Constructors;
-import org.lexevs.dao.index.lucenesupport.LuceneIndexTemplate;
-import org.lexevs.dao.index.version.LexEvsIndexFormatVersion;
+import org.lexevs.dao.index.lucenesupport.*;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -34,34 +33,27 @@ import java.util.List;
  */
 public abstract class AbstractBaseIndexDao implements LexEvsIndexFormatVersionAwareDao {
 
-	/* (non-Javadoc)
-	 * @see org.lexevs.dao.index.access.LexEvsIndexFormatVersionAwareDao#supportsLexEvsIndexFormatVersion(org.lexevs.dao.index.version.LexEvsIndexFormatVersion)
-	 */
-	public boolean supportsLexEvsIndexFormatVersion(LexEvsIndexFormatVersion version) {
-		for(LexEvsIndexFormatVersion supportedVersion : doGetSupportedLexEvsIndexFormatVersions()){
-			if(version.isEqualVersion(supportedVersion)){
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	/**
-	 * Do get supported lex evs index format versions.
-	 * 
-	 * @return the list< lex evs index format version>
-	 */
-	public abstract List<LexEvsIndexFormatVersion> doGetSupportedLexEvsIndexFormatVersions();
+    private EntityIndexRegistry registry = new EntityIndexRegistry();
 
     public LuceneIndexTemplate getTemplate(String codingSchemeUri, String codingSchemeVersion) {
         return this.getTemplate(Constructors.createAbsoluteCodingSchemeVersionReference(codingSchemeUri, codingSchemeVersion));
     }
 
     public LuceneIndexTemplate getTemplate(AbsoluteCodingSchemeVersionReference codingScheme) {
-        return this.getTemplate(Arrays.asList(codingScheme));
+        return new BaseLuceneIndexTemplate(this.registry.getAllNamedDirectory(codingScheme));
     }
 
     public LuceneIndexTemplate getTemplate(Collection<AbsoluteCodingSchemeVersionReference> codingSchemes) {
+        List<LuceneDirectoryFactory.NamedDirectory> directories = new ArrayList<LuceneDirectoryFactory.NamedDirectory>();
+
+        for(AbsoluteCodingSchemeVersionReference reference : codingSchemes) {
+            directories.add(this.registry.getAllNamedDirectory(reference));
+        }
+
+        return new MultiBaseLuceneIndexTemplate(directories);
+    }
+
+    public LuceneIndexTemplate getTemplate() {
         return null;
     }
 }

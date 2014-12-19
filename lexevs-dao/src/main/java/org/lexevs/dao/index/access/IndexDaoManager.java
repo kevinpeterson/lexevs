@@ -18,13 +18,11 @@
  */
 package org.lexevs.dao.index.access;
 
-import org.apache.commons.lang.StringUtils;
 import org.lexevs.dao.index.access.entity.EntityDao;
 import org.lexevs.dao.index.access.metadata.MetadataDao;
 import org.lexevs.dao.index.access.search.SearchDao;
 import org.lexevs.dao.index.indexer.MetaData;
 import org.lexevs.dao.index.version.LexEvsIndexFormatVersion;
-import org.lexevs.system.model.LocalCodingScheme;
 import org.lexevs.system.service.SystemResourceService;
 import org.springframework.util.Assert;
 
@@ -61,7 +59,7 @@ public class IndexDaoManager {
 	 * @return the entity dao
 	 */
 	public EntityDao getEntityDao(String codingSchemeUri, String version){
-		return null;//this.doGetDao(codingSchemeUri, version, this.getEntityDaos());
+		return this.doGetDao(codingSchemeUri, version, this.getEntityDaos());
 	}
 	
 	public SearchDao getSearchDao(){
@@ -100,6 +98,7 @@ public class IndexDaoManager {
 	 * @return the lex grid schema version
 	 */
 	protected LexEvsIndexFormatVersion getLexGridSchemaVersion(String uri, String version){
+        /*
 		try {
 			String codingSchemeName = systemResourceService.getInternalCodingSchemeNameForUserCodingSchemeName(uri, version);
 			
@@ -116,6 +115,8 @@ public class IndexDaoManager {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+		*/
+        return null;
 	}
 	
 	/**

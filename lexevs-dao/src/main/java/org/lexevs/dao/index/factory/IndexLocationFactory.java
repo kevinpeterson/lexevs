@@ -18,18 +18,16 @@
  */
 package org.lexevs.dao.index.factory;
 
-import java.io.File;
-
 import org.lexevs.system.constants.SystemVariables;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
+import java.io.File;
+
 public class IndexLocationFactory implements FactoryBean {
 
-	public static String DEFAULT_SINGLE_INDEX_NAME = "commonIndex";
-	
 	private String indexName;
 	
 	private SystemVariables systemVariables;

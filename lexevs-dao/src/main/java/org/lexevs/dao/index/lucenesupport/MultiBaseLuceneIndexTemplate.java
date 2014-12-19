@@ -24,13 +24,14 @@ import org.apache.lucene.search.IndexSearcher;
 import org.lexevs.dao.index.lucenesupport.LuceneDirectoryFactory.NamedDirectory;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class MultiBaseLuceneIndexTemplate extends BaseLuceneIndexTemplate {
 	
-	private List<NamedDirectory> namedDirectories;
+	private Collection<NamedDirectory> namedDirectories;
 
-	public MultiBaseLuceneIndexTemplate(List<NamedDirectory> namedDirectories){
+	public MultiBaseLuceneIndexTemplate(Collection<NamedDirectory> namedDirectories){
 		super();
 		try {
 			this.setIndexSearcher(this.createIndexSearcher(namedDirectories));
@@ -41,7 +42,7 @@ public class MultiBaseLuceneIndexTemplate extends BaseLuceneIndexTemplate {
 		}
 	}
 
-	protected IndexSearcher createIndexSearcher(List<NamedDirectory> namedDirectories) throws Exception {
+	protected IndexSearcher createIndexSearcher(Collection<NamedDirectory> namedDirectories) throws Exception {
 		List<IndexReader> readers = new ArrayList<IndexReader>();
 
 		for(NamedDirectory dir : namedDirectories) {
@@ -51,7 +52,7 @@ public class MultiBaseLuceneIndexTemplate extends BaseLuceneIndexTemplate {
 		return new IndexSearcher(new MultiReader(readers.toArray(new IndexReader[readers.size()])));
 	}
 	
-	protected MultiReader createIndexReader(List<NamedDirectory> namedDirectories) throws Exception {
+	protected MultiReader createIndexReader(Collection<NamedDirectory> namedDirectories) throws Exception {
 		List<IndexReader> readers = new ArrayList<IndexReader>();
 		
 		for(NamedDirectory dir : namedDirectories) {

@@ -21,8 +21,10 @@ package org.lexevs.dao.index.access.entity;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
+import org.lexevs.dao.index.access.LexEvsIndexFormatVersionAwareDao;
 import org.lexevs.dao.index.model.IndexableEntity;
 import org.lexevs.dao.index.model.IndexedEntity;
+import org.lexevs.dao.index.model.IndexedEntityReference;
 
 import java.util.List;
 import java.util.Set;
@@ -32,11 +34,11 @@ import java.util.Set;
  * 
  * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
  */
-public interface EntityDao {
+public interface EntityDao extends LexEvsIndexFormatVersionAwareDao {
 	
 	public String getIndexName(String codingSchemeUri, String version);
 
-	public List<IndexedEntity> query(String codingSchemeUri, String version, List<? extends Query> combinedQueries, List<? extends Query> individualQueries);
+	public List<IndexedEntityReference> query(String codingSchemeUri, String version, List<? extends Query> combinedQueries, List<? extends Query> individualQueries);
 
 	public void deleteDocuments(String codingSchemeUri, String version, Term term);
 	
@@ -52,9 +54,9 @@ public interface EntityDao {
 	public Query getMatchAllDocsQuery(
 			String codingSchemeUri, String version);
 	
-	public List<IndexedEntity> query(String codingSchemeUri, String version, Query query);
+	public List<IndexedEntityReference> query(String codingSchemeUri, String version, Query query);
 	
-	public List<IndexedEntity> query(Query query);
+	//public List<IndexedEntityReference> query(Query query);
 
 	//public Filter getCodingSchemeFilter(String uri, String version);
 }

@@ -18,19 +18,21 @@
  */
 package org.lexevs.dao.index.lucenesupport;
 
-import java.io.IOException;
-
 import org.apache.commons.io.FileUtils;
-import org.apache.lucene.index.*;
+import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.LockObtainFailedException;
-import org.apache.lucene.store.MMapDirectory;
 import org.apache.lucene.util.Version;
 import org.lexevs.dao.index.indexer.LuceneLoaderCode;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.core.io.Resource;
+
+import java.io.IOException;
 
 public class LuceneDirectoryFactory implements FactoryBean {
 
@@ -40,7 +42,18 @@ public class LuceneDirectoryFactory implements FactoryBean {
 	
 	private LuceneDirectoryCreator luceneDirectoryCreator;
 
-	@Override
+    public LuceneDirectoryFactory() {
+        super();
+    }
+
+    public LuceneDirectoryFactory(String indexName, Resource indexDirectory, LuceneDirectoryCreator luceneDirectoryCreator) {
+        super();
+        this.indexName = indexName;
+        this.indexDirectory = indexDirectory;
+        this.luceneDirectoryCreator = luceneDirectoryCreator;
+    }
+
+    @Override
 	public Object getObject() throws Exception {
 		return luceneDirectoryCreator.getDirectory(indexName, indexDirectory.getFile());
 	}
@@ -132,9 +145,7 @@ public class LuceneDirectoryFactory implements FactoryBean {
 			return reader;
 		}
 
-		private void initIndexDirectory(Directory directory) throws IOException,
-			CorruptIndexException, LockObtainFailedException {
-
+		private void initIndexDirectory(Directory directory) throws IOException, LockObtainFailedException {
 			if(!DirectoryReader.indexExists(directory)){
 				IndexWriter writer = new IndexWriter(
 						directory, 
@@ -161,7 +172,7 @@ public class LuceneDirectoryFactory implements FactoryBean {
 			}
 		}
 
-		public void remove() {
+		protected void remove() {
 			try {
 				this.indexReader.close();
 

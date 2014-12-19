@@ -23,10 +23,6 @@
         	</map>
         </property>
     </bean>   
-    
-<!--    <bean id="sqlMapPrefixPropertiesFactory" class="org.lexevs.dao.database.ibatis.sqlmap.SqlMapPrefixPropertiesFactory">-->
-<!--    	<property name="systemVariables" ref="systemVariables"/>-->
-<!--    </bean>-->
 
 	<bean id="defaultRootBuilder" class="org.lexevs.dao.database.operation.root.DefaultRootBuilder">
 		<property name="databaseServiceManager" ref="databaseServiceManager"/>
@@ -700,7 +696,6 @@
 		<property name="registry" ref="databaseRegistry"/>
 		<property name="myClassLoader" ref="myClassLoader"/>
 		<property name="databaseServiceManager" ref="databaseServiceManager"/>
-		<property name="entityIndexService" ref="luceneEntityIndexService"/>
 		<property name="metadataIndexService" ref="luceneMetadataIndexService"/>
 	</bean>
 	
@@ -755,37 +750,21 @@
 		<property name="entityService" ref="entityService"/>
 		<property name="systemResourceService" ref="delegatingResourceManagingService"/>
 		<property name="systemVariables" ref="systemVariables"/> 
-		<property name="entityIndexer" ref="commonIndexLoaderCodeIndexer"/>
-		<property name="searchIndexer" ref = "searchEntityIndexer"/>
 		<property name="indexDaoManager" ref="indexDaoManager"/>
 		<property name="metaData" ref="luceneIndexMetadataFactory"/>
 		<property name="logger" ref="loggerFactory"/>
 	</bean>
-	
+
+    <bean id="luceneEntityIndexService" class="org.lexevs.dao.index.service.entity.LuceneEntityIndexService">
+        <property name="indexDaoManager" ref="indexDaoManager"/>
+    </bean>
+
 	<bean id="defaultLexEvsIndexOperations"
 		 class="org.lexevs.dao.index.operation.DefaultLexEvsIndexOperations" parent="loggingBean">
 	 	<property name="indexCreator" ref="entityBatchingIndexCreator"/>
-	 	<property name="indexRegistry" ref="indexRegistry"/>
 	 	<property name="metaData" ref="luceneIndexMetadataFactory"/>
 	 </bean>
-	
-	<bean id="luceneEntityIndexService" class="org.lexevs.dao.index.service.entity.SearchIndexAwareEntityIndexService">
-		<property name="indexDaoManager" ref="indexDaoManager"/> 
-		<property name="indexCreator" ref="entityBatchingIndexCreator"/>
-		<property name="systemResourceService" ref="delegatingResourceManagingService"/>
-		<property name="entityIndexer" ref="commonIndexLoaderCodeIndexer"/>
-		<property name="metaData" ref="luceneIndexMetadataFactory"/>
-		<property name="indexRegistry" ref="indexRegistry"/>
-		<property name="searchIndexService" ref="luceneSearchIndexService"/>
-		<property name="registry" ref="registry"/>
-	</bean>
-	
-	<bean id="luceneSearchIndexService" class="org.lexevs.dao.index.service.search.LuceneSearchIndexService">
-		<property name="indexDaoManager" ref="indexDaoManager"/> 
-		<property name="entityIndexer" ref="searchEntityIndexer"/> 
-		<property name="indexCreator" ref="entityBatchingIndexCreator"/>
-	</bean>
-	
+
 	<bean id="luceneMetadataIndexService" 
 		class="org.lexevs.dao.index.service.metadata.LuceneMetadataIndexService">
 		<property name="indexDaoManager" ref="indexDaoManager"/> 
@@ -793,19 +772,15 @@
 	</bean>
 	
 	<bean id="indexServiceManager" class="org.lexevs.dao.index.service.IndexServiceManager">
-		<property name="entityIndexService" ref="luceneEntityIndexService"/>
 		<property name="metadataIndexService" ref="luceneMetadataIndexService"/>
-		<property name="searchIndexService" ref="luceneSearchIndexService"/>
 	</bean>
 	
 	<bean id="indexDaoManager" class="org.lexevs.dao.index.access.IndexDaoManager">
 		<property name="systemResourceService" ref="delegatingResourceManagingService"/>
 		<property name="metaData" ref="luceneIndexMetadataFactory"/>
-		<property name="indexRegistry" ref="indexRegistry"/>
 		<property name="entityDaos">
 			<list>
 				<ref bean="luceneIndexEntityDao"/>
-				<ref bean="luceneEntity2009Dao"/>
 			</list>
 		</property>
 		<property name="metadataDaos">
@@ -813,15 +788,6 @@
 				<ref bean="luceneMetadataDao"/>
 			</list>
 		</property>
-		<property name="searchDaos">
-			<list>
-				<ref bean="luceneSearch2013Dao"/>
-			</list>
-		</property>
-	</bean>
-	
-	<bean id="indexerService" class="org.lexevs.dao.index.factory.IndexerServiceFactory">
-		<property name="systemVariables" ref="systemVariables"/> 
 	</bean>
 	
 	<bean id="luceneMetadataDao" class="org.lexevs.dao.index.lucene.v2010.metadata.LuceneMetadataDao">
@@ -836,18 +802,9 @@
 	
 	<bean id="baseMetaDataLoader" class="org.lexevs.dao.index.metadata.BaseMetaDataLoader" />
 
-	<bean id="luceneIndexEntityDao" class="org.lexevs.dao.index.lucene.v2014.entity.LuceneEntityDao">
-		<property name="luceneIndexTemplate" ref="luceneEntityIndexTemplate"/>
-		<property name="indexRegistry" ref="indexRegistry"/>
+	<bean id="luceneIndexEntityDao" class="org.lexevs.dao.index.lucene.entity.LuceneEntityDao">
 	</bean>
-	
-	<bean id="luceneEntity2009Dao" class="org.lexevs.dao.index.lucene.v2009.entity.LuceneEntity2009Dao">
-		<property name="indexRegistry" ref="indexRegistry"/>
-	</bean>
-	
-	<bean id="luceneSearch2013Dao" class="org.lexevs.dao.index.lucene.search.LuceneSearchDao">
-		<property name="luceneIndexTemplate" ref="luceneSearchIndexTemplate"/>
-	</bean>
+
 	
 	<bean id="commonIndexLoaderCodeIndexer" class="org.lexevs.dao.index.indexer.LuceneLoaderCodeIndexer">
 		<property name="systemResourceService" ref="delegatingResourceManagingService"/>
@@ -857,7 +814,8 @@
 	
 	<bean id="abstractDirectoryFactory"
 		class="org.lexevs.dao.index.lucenesupport.LuceneDirectoryFactory" abstract="true"/>
-	
+
+    <!--
 	<bean id="commonIndexDirectory" parent="abstractDirectoryFactory">
 		<property name="indexDirectory" ref="commonIndexLocation" />
 		<property name="luceneDirectoryCreator" ref="defaultLuceneDirectoryCreator"/>
@@ -873,6 +831,7 @@
 			<util:constant static-field="org.lexevs.dao.index.factory.IndexLocationFactory.DEFAULT_SINGLE_INDEX_NAME"/>
 		</property>
 	</bean>
+    -->
 	
 	<bean id="metadataIndexDirectory" parent="abstractDirectoryFactory">
 		<property name="luceneDirectoryCreator" ref="defaultLuceneDirectoryCreator"/>
@@ -899,18 +858,10 @@
 	
 	<bean id="defaultLuceneDirectoryCreator" 
 		class="org.lexevs.dao.index.lucenesupport.DefaultLuceneDirectoryCreator"/>
-		
-	<bean id="searchEntityIndexer" class="org.lexevs.dao.index.indexer.SearchEntityIndexer">
-		<property name="systemResourceService" ref="delegatingResourceManagingService"/>
-	</bean>
 
 	<bean id="luceneIndexMetadataFactory" class="org.lexevs.dao.index.lucenesupport.LuceneIndexMetadataFactory"
 	depends-on="commonIndexDirectory">
 		<property name="systemVariables" ref="systemVariables"/> 
-	</bean>
-	
-	<bean id="luceneEntityIndexTemplate" class="org.lexevs.dao.index.lucenesupport.BaseLuceneIndexTemplate">
-		<property name="namedDirectory" ref="commonIndexDirectory"/>
 	</bean>
 	
 	<bean id="luceneSearchIndexTemplate" class="org.lexevs.dao.index.lucenesupport.BaseLuceneIndexTemplate">
@@ -921,15 +872,6 @@
 		<property name="namedDirectory" ref="metadataIndexDirectory"/>
 	</bean>
 
-	<bean id="indexRegistry" class="org.lexevs.dao.index.indexregistry.SingleIndexRegistry">
-		<property name="systemVariables" ref="systemVariables"/> 
-		<property name="metaData" ref="luceneIndexMetadataFactory"/>
-		<property name="systemResourceService" ref="delegatingResourceManagingService"/>
-		<property name="luceneIndexTemplate" ref="luceneEntityIndexTemplate"/>
-		<property name="searchLuceneIndexTemplate" ref="luceneSearchIndexTemplate"/>
-		<property name="luceneDirectoryCreator" ref="defaultLuceneDirectoryCreator"/>
-	</bean>
-	
 	<bean id="cacheConfigLocationFactory" class="org.lexevs.cache.CacheConfigLocationFactory">
 		<property name="systemVariables" ref="systemVariables"/> 
 	</bean>

@@ -21,10 +21,12 @@ package org.lexevs.dao.index.indexer;
 import org.apache.lucene.document.Document;
 import org.lexevs.dao.index.model.IndexedProperty;
 
+import java.util.List;
+
 public class PropertyIndexer implements Indexer<IndexedProperty> {
 
     @Override
-    public Document index(IndexedProperty indexable) {
+    public List<Document> index(IndexedProperty indexable) {
         LuceneDocumentBuilder builder = new LuceneDocumentBuilder();
 
         return null;//builder.withField("", 1, false).build();

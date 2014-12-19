@@ -19,9 +19,12 @@
 package org.lexevs.dao.index.indexer;
 
 import org.apache.lucene.document.Document;
-import org.lexevs.dao.index.model.IndexedEntity;
+import org.lexevs.dao.index.model.IndexableEntity;
 
-public class EntityIndexer extends AbstractIndexer<IndexedEntity> {
+import java.util.Arrays;
+import java.util.List;
+
+public class EntityIndexer extends AbstractIndexer<IndexableEntity> {
 
     private static String CS_URI_VERSION_KEY_FIELD = "csUriVersionKey";
 
@@ -33,31 +36,37 @@ public class EntityIndexer extends AbstractIndexer<IndexedEntity> {
     private static String ENTITY_NAMESPACE_FIELD = "entityCode";
 
     @Override
-    public Document index(IndexedEntity indexable) {
+    public List<Document> index(IndexableEntity indexable) {
         LuceneDocumentBuilder builder = new LuceneDocumentBuilder();
 
-        return builder.
+        Document doc = builder.
 
                 withUntokenizedField(
                         CS_URI_VERSION_CODE_NAMESPACE_KEY_FIELD, false,
-                        this.toKey(indexable.getCodeSystemUri(), indexable.getCodeSystemVersion())).
+                        this.toKey(
+                                indexable.getCodingSchemeUri(),
+                                indexable.getCodingSchemeVersion(),
+                                indexable.getEntity().getEntityCode(),
+                                indexable.getEntity().getEntityCodeNamespace())).
 
                 withUntokenizedField(
                         CS_URI_VERSION_KEY_FIELD, false,
-                        this.toKey(indexable.getCodeSystemUri(), indexable.getCodeSystemVersion())).
+                        this.toKey(indexable.getCodingSchemeUri(), indexable.getCodingSchemeVersion())).
 
                 withUntokenizedField(
                         ENTITY_CODE_FIELD, true,
-                        indexable.getEntityCode()).
+                        indexable.getEntity().getEntityCode()).
 
                 withUntokenizedField(
                         ENTITY_NAMESPACE_FIELD, true,
-                        indexable.getEntityCodeNamespace()).
+                        indexable.getEntity().getEntityCodeNamespace()).
 
                 withUnindexedField(
                         ENTITY_UID_FIELD,
-                        indexable.getEntityUuid()).
+                        indexable.getEntity().getId()).
 
                 build();
+
+        return Arrays.asList(doc);
     }
 }

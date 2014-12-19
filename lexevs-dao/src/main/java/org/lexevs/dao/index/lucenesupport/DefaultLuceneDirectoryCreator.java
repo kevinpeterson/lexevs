@@ -18,15 +18,11 @@
  */
 package org.lexevs.dao.index.lucenesupport;
 
-import java.io.File;
-import java.io.IOException;
-
-import org.apache.commons.lang.SystemUtils;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.store.MMapDirectory;
-import org.apache.lucene.store.NIOFSDirectory;
+import org.apache.lucene.store.RAMDirectory;
 import org.lexevs.dao.index.lucenesupport.LuceneDirectoryFactory.NamedDirectory;
+
+import java.io.File;
 
 /**
  * The Class DefaultLuceneDirectoryCreator.
@@ -39,8 +35,10 @@ public class DefaultLuceneDirectoryCreator implements LuceneDirectoryCreator{
 	public NamedDirectory getDirectory(String indexName, File baseDirectory) {
 		Directory directory;
 		try {
-			directory = MMapDirectory.open(baseDirectory);
-		} catch (IOException e) {
+			//directory = MMapDirectory.open(baseDirectory);
+            //TODO: In memory for now
+            directory = new RAMDirectory();
+		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 		return new NamedDirectory(
